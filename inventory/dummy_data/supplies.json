@@ -1,0 +1,18 @@
+[
+    {
+        "name": "SenSports",
+        "city": "Kolkata",
+        "zipcode": 700067,
+        "contact_person": "Mr. X",
+        "phone": "99999-99999",
+        "email": "mr.x@email.com"
+    },
+    {
+        "name": "Ash_Watches",
+        "city": "Mumbai",
+        "zipcode": 347274,
+        "contact_person": "Mr. X",
+        "phone": "99999-99998",
+        "email": "mr.y@email.com"
+    }
+]

@@ -1,0 +1,29 @@
+[
+    {
+        "product_code": "nb_bat",
+        "name": "NB cricket bat",
+        "category": "sports",
+        "price_buy": "899",
+        "price_sell": "1099",
+        "measure_unit": "qty",
+        "supplier_id": 1
+    },
+    {
+        "product_code": "dc_ball",
+        "name": "DUCE Ball",
+        "category": "sports",
+        "price_buy": "199",
+        "price_sell": "299",
+        "measure_unit": "qty",
+        "supplier_id": 1
+    },
+    {
+        "product_code": "foss_ch_men",
+        "name": "Fossil Chronograph Mens Watch",
+        "category": "watches",
+        "price_buy": "4199",
+        "price_sell": "4599",
+        "measure_unit": "qty",
+        "supplier_id": 2
+    }
+]
