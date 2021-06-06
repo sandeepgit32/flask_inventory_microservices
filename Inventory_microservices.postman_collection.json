@@ -1,0 +1,322 @@
+{
+	"info": {
+		"_postman_id": "86381ba0-2730-41f7-b262-48ba5813429c",
+		"name": "Inventory_microservices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "Getting all products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/products",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View a specific product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/product/<id>",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"product",
+								"<id>"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "View a specific product",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/product/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"product",
+										"1"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Delete a specific product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/product/<id>",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"product",
+								"<id>"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete a specific product",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/product/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"product",
+										"1"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Create a new product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/products",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create a new product",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/products",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": "{\n    \"product_code\": \"nb_bat\",\n    \"name\": \"NB cricket bat\",\n    \"category\": \"sports\",\n    \"price_buy\": \"899\",\n    \"price_sell\": \"1099\",\n    \"measure_unit\": \"qty\",\n    \"supplier_name\": \"Sen Sports\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "suppliers",
+			"item": [
+				{
+					"name": "Getting all suppliers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/supplier/<id>",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"supplier",
+								"<id>"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Getting all suppliers",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/supplier/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"supplier",
+										"1"
+									]
+								}
+							},
+							"status": "Bad Gateway",
+							"code": 502,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.14.0 (Ubuntu)"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 06 Jun 2021 04:18:20 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html"
+								},
+								{
+									"key": "Content-Length",
+									"value": "182"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "<html>\n    <head>\n        <title>502 Bad Gateway</title>\n    </head>\n    <body bgcolor=\"white\">\n        <center>\n            <h1>502 Bad Gateway</h1>\n        </center>\n        <hr>\n        <center>nginx/1.14.0 (Ubuntu)</center>\n    </body>\n</html>"
+						}
+					]
+				},
+				{
+					"name": "Delete a specific supplier",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/supplier/<id>",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"supplier",
+								"<id>"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete a specific supplier",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/supplier/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"supplier",
+										"1"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "View a specific supplier",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new supplier",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/suppliers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create a new supplier",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Ash_Watches\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": 347274,\n    \"contact_person\": \"Mr. Y\",\n    \"phone\": \"99999-99998\",\n    \"email\": \"mr.y@email.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/suppliers",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"suppliers"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				}
+			]
+		}
+	]
+}

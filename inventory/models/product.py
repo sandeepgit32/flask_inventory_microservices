@@ -13,7 +13,7 @@ class ProductModel(db.Model):
     price_sell = db.Column(db.Float(precision=2), nullable=False)
     measure_unit = db.Column(db.String(10))
 
-    supplier_id = db.Column(db.Integer, db.ForeignKey("suppliers.id"), nullable=False)
+    supplier_name = db.Column(db.String(100), db.ForeignKey("suppliers.name"), nullable=False)
 
 
     @classmethod

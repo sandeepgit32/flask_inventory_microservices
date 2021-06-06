@@ -39,13 +39,9 @@ class Supplier(Resource):
         supplier = SupplierModel.find_by_id(id)
 
         if supplier:
-            # It is assumed that only the 'city', 'zipcode', 'contact_person', 'phone' and 
-            # 'email' can be updated.
-            supplier.city = supplier_json["city"]
-            supplier.zipcode = supplier_json["zipcode"]
-            supplier.contact_person = supplier_json["contact_person"]
-            supplier.phone = supplier_json["phone"]
-            supplier.email = supplier_json["email"]
+            # Dynamically setting attributes of the object 'supplier' from 'supplier_json' dict
+            for attribute in supplier_json.keys():
+                setattr(supplier, attribute, supplier_json[attribute])
             supplier.save_to_db()
         else:
             return {"message": gettext("supplier_not_found")}, 404
@@ -63,6 +59,7 @@ class SupplierList(Resource):
     @classmethod
     def post(cls):
         supplier_json = request.get_json()
+        print('request', request.headers)
         supplier_name = supplier_json["name"]
 
         if SupplierModel.find_by_name(supplier_name):

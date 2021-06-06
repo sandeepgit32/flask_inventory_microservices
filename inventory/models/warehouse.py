@@ -14,7 +14,7 @@ class WarehouseModel(db.Model):
     phone = db.Column(db.String(20))
     email = db.Column(db.String(80))
 
-    customers = db.relationship("CustomerModel", backref='warehouse')
+    customers = db.relationship("CustomerModel", backref='warehouse', lazy="dynamic")
 
     @classmethod
     def find_by_name(cls, name: str) -> "WarehouseModel":

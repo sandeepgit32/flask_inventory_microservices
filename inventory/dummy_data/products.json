@@ -6,7 +6,7 @@
         "price_buy": "899",
         "price_sell": "1099",
         "measure_unit": "qty",
-        "supplier_id": 1
+        "supplier_name": "Sen Sports"
     },
     {
         "product_code": "dc_ball",
@@ -15,7 +15,7 @@
         "price_buy": "199",
         "price_sell": "299",
         "measure_unit": "qty",
-        "supplier_id": 1
+        "supplier_name": "Sen Sports"
     },
     {
         "product_code": "foss_ch_men",
@@ -24,6 +24,6 @@
         "price_buy": "4199",
         "price_sell": "4599",
         "measure_unit": "qty",
-        "supplier_id": 2
+        "supplier_name": "Ash_Watches"
     }
 ]

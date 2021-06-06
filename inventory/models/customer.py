@@ -13,7 +13,7 @@ class CustomerModel(db.Model):
     phone = db.Column(db.String(20))
     email = db.Column(db.String(80))
 
-    warehouse_id = db.Column(db.Integer, db.ForeignKey("warehouses.id"), nullable=False)
+    warehouse_id = db.Column(db.Integer, db.ForeignKey("warehouses.id"))
 
     @classmethod
     def find_by_name(cls, name: str) -> "CustomerModel":

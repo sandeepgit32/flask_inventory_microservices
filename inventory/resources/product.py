@@ -39,10 +39,9 @@ class Product(Resource):
         product = ProductModel.find_by_code(product_code)
 
         if product:
-            # It is assumed that only the 'category', 'price_buy' and 'price_sell' can be updated.
-            product.category = product_json["category"]
-            product.price_buy = product_json["price_buy"]
-            product.price_sell = product_json["price_sell"]
+            # Dynamically setting attributes of the object 'product' from 'product_json' dict
+            for attribute in product_json.keys():
+                setattr(supplier, product, product_json[attribute])
             product.save_to_db()
         else:
             return {"message": gettext("product_not_found")}, 404

@@ -7,14 +7,14 @@ class SupplierModel(db.Model):
     __tablename__ = "suppliers"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
     city = db.Column(db.String(50))
     zipcode = db.Column(db.Integer)
     contact_person = db.Column(db.String(80))
     phone = db.Column(db.String(20))
     email = db.Column(db.String(80))
 
-    products = db.relationship("ProductModel", backref='supplier')
+    products = db.relationship("ProductModel", backref='supplier', lazy="dynamic", cascade="all, delete-orphan")
 
     @classmethod
     def find_by_id(cls, id: int) -> "SupplierModel":
