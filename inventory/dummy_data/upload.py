@@ -2,8 +2,8 @@
 Upload command: 
     'python upload.py -d supplier'
     'python upload.py -d product'
-    'python upload.py -d customer'
     'python upload.py -d warehouse'
+    'python upload.py -d customer'
 
 1. Upload supplier data first before uploading product data.
 2. Upload warehouse data first before uploading customer data.

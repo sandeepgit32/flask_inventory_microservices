@@ -9,12 +9,12 @@ class WarehouseModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False, unique=True)
     city = db.Column(db.String(50))
-    zipcode = db.Column(db.Integer)
-    contact_person = db.Column(db.String(80))
-    phone = db.Column(db.String(20))
-    email = db.Column(db.String(80))
 
     customers = db.relationship("CustomerModel", backref='warehouse', lazy="dynamic")
+
+    @classmethod
+    def find_by_id(cls, id: int) -> "WarehouseModel":
+        return cls.query.filter_by(id=id).first()
 
     @classmethod
     def find_by_name(cls, name: str) -> "WarehouseModel":
@@ -25,12 +25,8 @@ class WarehouseModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def filter_by_city(cls) -> List["WarehouseModel"]:
+    def filter_by_city(cls, city: str) -> List["WarehouseModel"]:
         return cls.query.filter_by(city=city)
-
-    @classmethod
-    def filter_by_zipcode(cls) -> List["WarehouseModel"]:
-        return cls.query.filter_by(zipcode=zipcode)
 
     def save_to_db(self) -> None:
         db.session.add(self)

@@ -41,7 +41,7 @@ class Product(Resource):
         if product:
             # Dynamically setting attributes of the object 'product' from 'product_json' dict
             for attribute in product_json.keys():
-                setattr(supplier, product, product_json[attribute])
+                setattr(product, attribute, product_json[attribute])
             product.save_to_db()
         else:
             return {"message": gettext("product_not_found")}, 404

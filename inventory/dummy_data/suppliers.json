@@ -14,5 +14,13 @@
         "contact_person": "Mr. Y",
         "phone": "99999-99998",
         "email": "mr.y@email.com"
+    },
+    {
+        "name": "Ash_Motors",
+        "city": "Mumbai",
+        "zipcode": 347274,
+        "contact_person": "Mr. Y",
+        "phone": "99999-99998",
+        "email": "mr.y@email.com"
     }
 ]

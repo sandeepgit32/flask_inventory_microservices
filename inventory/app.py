@@ -4,8 +4,6 @@ from marshmallow import ValidationError
 
 from db import db
 from ma import ma
-from resources.product import Product, ProductList
-from resources.supplier import Supplier, SupplierList
 
 app = Flask(__name__)
 
@@ -16,6 +14,11 @@ app = Flask(__name__)
 app.config.from_object('config.DevConfig')
 
 api = Api(app)
+
+from resources.product import Product, ProductList
+from resources.supplier import Supplier, SupplierList
+from resources.customer import Customer, CustomerList
+from resources.warehouse import Warehouse, WarehouseList, WarehouseListByCity
 
 
 @app.before_first_request
@@ -32,6 +35,11 @@ api.add_resource(Product, "/product/<string:product_code>")
 api.add_resource(ProductList, "/products")
 api.add_resource(Supplier, "/supplier/<int:id>")
 api.add_resource(SupplierList, "/suppliers")
+api.add_resource(Customer, "/customer/<int:id>")
+api.add_resource(CustomerList, "/customers")
+api.add_resource(Warehouse, "/warehouse/<int:id>")
+api.add_resource(WarehouseList, "/warehouses")
+api.add_resource(WarehouseListByCity, "/warehouses/<string:city>")
 
 
 if __name__ == "__main__":

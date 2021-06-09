@@ -9,7 +9,7 @@ supplier_list_schema = SupplierSchema(many=True)
 
 
 class Supplier(Resource):
-    # GET /supplier/<string:id>
+    # GET /supplier/<int:id>
     @classmethod
     def get(cls, id: int):
         supplier = SupplierModel.find_by_id(id)
@@ -19,7 +19,7 @@ class Supplier(Resource):
         return {"message": gettext("supplier_not_found")}, 404
 
 
-    # DELETE /supplier/<string:id>
+    # DELETE /supplier/<int:id>
     @classmethod
     def delete(cls, id: int):
         supplier = SupplierModel.find_by_id(id)
@@ -30,7 +30,7 @@ class Supplier(Resource):
         return {"message": gettext("supplier_not_found")}, 404
 
 
-    # PUT /supplier/<string:id>
+    # PUT /supplier/<int:id>
     @classmethod
     def put(cls, id: int):
         # When a client needs to replace an existing Resource entirely, they can use PUT. 
@@ -54,6 +54,7 @@ class SupplierList(Resource):
     @classmethod
     def get(cls):
         return {"suppliers": supplier_list_schema.dump(SupplierModel.find_all())}, 200
+
 
     # POST /suppliers
     @classmethod

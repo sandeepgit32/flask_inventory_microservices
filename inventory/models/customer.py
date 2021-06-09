@@ -16,6 +16,10 @@ class CustomerModel(db.Model):
     warehouse_id = db.Column(db.Integer, db.ForeignKey("warehouses.id"))
 
     @classmethod
+    def find_by_id(cls, id: int) -> "CustomerModel":
+        return cls.query.filter_by(id=id).first()
+
+    @classmethod
     def find_by_name(cls, name: str) -> "CustomerModel":
         return cls.query.filter_by(name=name).first()
 

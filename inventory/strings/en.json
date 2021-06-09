@@ -8,6 +8,16 @@
     "supplier_error_inserting": "An error occurred while inserting the supplier.",
     "supplier_not_found": "Supplier not found.",
     "supplier_deleted": "Supplier deleted.",
+
+    "customer_exists": "A customer with name '{}' already exists.",
+    "customer_error_inserting": "An error occurred while inserting the customer.",
+    "customer_not_found": "Customer not found.",
+    "customer_deleted": "Customer deleted.",
+
+    "warehouse_exists": "A warehouse with name '{}' already exists.",
+    "warehouse_error_inserting": "An error occurred while inserting the warehouse.",
+    "warehouse_not_found": "Warehouse not found.",
+    "warehouse_deleted": "Warehouse deleted.",
   
     "user_username_exists": "A user with that username already exists.",
     "user_email_exists": "A user with that email already exists.",
