@@ -3,6 +3,7 @@ from flask_restful import Resource
 from models.customer import CustomerModel
 from schemas.customer import CustomerSchema
 from libs.strings import gettext
+from libs.pagination import get_paginated_list
 
 customer_schema = CustomerSchema()
 customer_list_schema = CustomerSchema(many=True)
@@ -53,7 +54,13 @@ class CustomerList(Resource):
     # GET /customers
     @classmethod
     def get(cls):
-        return {"customers": customer_list_schema.dump(CustomerModel.find_all())}, 200
+        return get_paginated_list(
+            customer_list_schema.dump(CustomerModel.find_all()),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200
+
 
     # POST /customers
     @classmethod
@@ -72,3 +79,15 @@ class CustomerList(Resource):
             return {"message": gettext("customer_error_inserting")}, 500
 
         return customer_schema.dump(customer), 201
+
+
+class CustomerListByCity(Resource):
+    # GET /customers/<string:city>
+    @classmethod
+    def get(cls, city: str):
+        return get_paginated_list(
+            customer_list_schema.dump(CustomerModel.filter_by_city(city)),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200

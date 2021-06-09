@@ -3,6 +3,7 @@ from flask import request
 from models.product import ProductModel
 from schemas.product import ProductSchema
 from libs.strings import gettext
+from libs.pagination import get_paginated_list
 
 product_schema = ProductSchema()
 product_list_schema = ProductSchema(many=True)
@@ -53,7 +54,12 @@ class ProductList(Resource):
     # GET /products
     @classmethod
     def get(cls):
-        return {"products": product_list_schema.dump(ProductModel.find_all())}, 200
+        return get_paginated_list(
+            product_list_schema.dump(ProductModel.find_all()),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200
 
     # POST /products
     @classmethod

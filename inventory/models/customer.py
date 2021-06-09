@@ -28,7 +28,7 @@ class CustomerModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def filter_by_city(cls) -> List["CustomerModel"]:
+    def filter_by_city(cls, city: str) -> List["CustomerModel"]:
         return cls.query.filter_by(city=city)
 
     @classmethod

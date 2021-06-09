@@ -3,6 +3,7 @@ from flask import request
 from models.supplier import SupplierModel
 from schemas.supplier import SupplierSchema
 from libs.strings import gettext
+from libs.pagination import get_paginated_list
 
 supplier_schema = SupplierSchema()
 supplier_list_schema = SupplierSchema(many=True)
@@ -53,7 +54,12 @@ class SupplierList(Resource):
     # GET /suppliers
     @classmethod
     def get(cls):
-        return {"suppliers": supplier_list_schema.dump(SupplierModel.find_all())}, 200
+        return get_paginated_list(
+            supplier_list_schema.dump(SupplierModel.find_all()),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200
 
 
     # POST /suppliers

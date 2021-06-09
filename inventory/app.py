@@ -2,6 +2,11 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from marshmallow import ValidationError
 
+from resources.product import Product, ProductList
+from resources.supplier import Supplier, SupplierList
+from resources.customer import Customer, CustomerList, CustomerListByCity
+from resources.warehouse import Warehouse, WarehouseList, WarehouseListByCity
+
 from db import db
 from ma import ma
 
@@ -14,11 +19,6 @@ app = Flask(__name__)
 app.config.from_object('config.DevConfig')
 
 api = Api(app)
-
-from resources.product import Product, ProductList
-from resources.supplier import Supplier, SupplierList
-from resources.customer import Customer, CustomerList
-from resources.warehouse import Warehouse, WarehouseList, WarehouseListByCity
 
 
 @app.before_first_request
@@ -37,6 +37,7 @@ api.add_resource(Supplier, "/supplier/<int:id>")
 api.add_resource(SupplierList, "/suppliers")
 api.add_resource(Customer, "/customer/<int:id>")
 api.add_resource(CustomerList, "/customers")
+api.add_resource(CustomerListByCity, "/customers/<string:city>")
 api.add_resource(Warehouse, "/warehouse/<int:id>")
 api.add_resource(WarehouseList, "/warehouses")
 api.add_resource(WarehouseListByCity, "/warehouses/<string:city>")

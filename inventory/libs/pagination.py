@@ -13,14 +13,15 @@ def get_paginated_list(results, url, start, limit):
     obj['start'] = start
     obj['limit'] = limit
     obj['count'] = count
-    # make URLs
+    # make URLs without query string
+    url = request_url_without_query_string = url.split('?')[0]
     # make previous url
     if start == 1:
         obj['previous'] = ''
     else:
         start_copy = max(1, start - limit)
-        limit_copy = start - 1
-        obj['previous'] = url + '?start=%d&limit=%d' % (start_copy, limit_copy)
+        # limit_copy = start - 1
+        obj['previous'] = url + '?start=%d&limit=%d' % (start_copy, limit)
     # make next url
     if start + limit > count:
         obj['next'] = ''

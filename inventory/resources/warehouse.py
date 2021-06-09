@@ -8,8 +8,6 @@ from libs.pagination import get_paginated_list
 warehouse_schema = WarehouseSchema()
 warehouse_list_schema = WarehouseSchema(many=True)
 
-# from app import api
-
 
 class Warehouse(Resource):
     # GET /warehouse/<int:id>
@@ -60,13 +58,12 @@ class WarehouseList(Resource):
 
     @classmethod
     def get(cls):
-        request_url_without_query_string = request.url.split('?')[0]
-        return {"warehouses": get_paginated_list(
+        return get_paginated_list(
             warehouse_list_schema.dump(WarehouseModel.find_all()),
-            request_url_without_query_string, 
+            request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
-        )}, 200
+        ), 200
 
 
     # POST /warehouses
@@ -93,4 +90,9 @@ class WarehouseListByCity(Resource):
     # GET /warehouses/<string:city>
     @classmethod
     def get(cls, city: str):
-        return {"warehouses": warehouse_list_schema.dump(WarehouseModel.filter_by_city(city))}, 200
+        return get_paginated_list(
+            warehouse_list_schema.dump(WarehouseModel.filter_by_city(city)),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200
