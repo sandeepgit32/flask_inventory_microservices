@@ -2,11 +2,13 @@ from flask_restful import Resource
 from flask import request
 from models.warehouse import WarehouseModel
 from schemas.warehouse import WarehouseSchema
+from schemas.customer import CustomerSchema
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
 
 warehouse_schema = WarehouseSchema()
 warehouse_list_schema = WarehouseSchema(many=True)
+customer_list_schema = CustomerSchema(many=True)
 
 
 class Warehouse(Resource):
@@ -92,6 +94,18 @@ class WarehouseListByCity(Resource):
     def get(cls, city: str):
         return get_paginated_list(
             warehouse_list_schema.dump(WarehouseModel.filter_by_city(city)),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200
+
+
+class CustomerListByWarehouse(Resource):
+    # GET /warehouse/<int:id>/customers
+    @classmethod
+    def get(cls, id: int):
+        return get_paginated_list(
+            customer_list_schema.dump(WarehouseModel.find_associated_customers_by_id(id)),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')

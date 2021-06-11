@@ -2,11 +2,13 @@ from flask_restful import Resource
 from flask import request
 from models.supplier import SupplierModel
 from schemas.supplier import SupplierSchema
+from schemas.product import ProductSchema
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
 
 supplier_schema = SupplierSchema()
 supplier_list_schema = SupplierSchema(many=True)
+product_list_schema = ProductSchema(many=True)
 
 
 class Supplier(Resource):
@@ -80,3 +82,27 @@ class SupplierList(Resource):
             return {"message": gettext("supplier_error_inserting")}, 500
 
         return supplier_schema.dump(supplier), 201
+
+
+class SupplierListByCity(Resource):
+    # GET /suppliers/<string:city>
+    @classmethod
+    def get(cls, city: str):
+        return get_paginated_list(
+            supplier_list_schema.dump(SupplierModel.filter_by_city(city)),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200
+
+
+class ProductListBySupplier(Resource):
+    # GET /supplier/<int:id>/products
+    @classmethod
+    def get(cls, id: int):
+        return get_paginated_list(
+            product_list_schema.dump(SupplierModel.find_related_products_by_id(id)),
+            request.url, 
+            start=request.args.get('start', default=1), 
+            limit=request.args.get('limit')
+        ), 200

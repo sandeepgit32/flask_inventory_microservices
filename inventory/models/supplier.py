@@ -21,6 +21,10 @@ class SupplierModel(db.Model):
         return cls.query.filter_by(id=id).first()
 
     @classmethod
+    def find_related_products_by_id(cls, id: int) -> List["ProductModel"]:
+        return cls.query.filter_by(id=id).first().products.all()
+
+    @classmethod
     def find_by_name(cls, name: str) -> "SupplierModel":
         return cls.query.filter_by(name=name).first()
 
@@ -29,11 +33,11 @@ class SupplierModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def filter_by_city(cls) -> List["SupplierModel"]:
+    def filter_by_city(cls, city: str) -> List["SupplierModel"]:
         return cls.query.filter_by(city=city)
 
     @classmethod
-    def filter_by_zipcode(cls) -> List["SupplierModel"]:
+    def filter_by_zipcode(cls, zipcode: str) -> List["SupplierModel"]:
         return cls.query.filter_by(zipcode=zipcode)
 
     def save_to_db(self) -> None:

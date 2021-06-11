@@ -17,6 +17,10 @@ class WarehouseModel(db.Model):
         return cls.query.filter_by(id=id).first()
 
     @classmethod
+    def find_associated_customers_by_id(cls, id: int) -> List["CustomerModel"]:
+        return cls.query.filter_by(id=id).first().customers.all()
+
+    @classmethod
     def find_by_name(cls, name: str) -> "WarehouseModel":
         return cls.query.filter_by(name=name).first()
 
