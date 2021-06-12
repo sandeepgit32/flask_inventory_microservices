@@ -68,7 +68,6 @@ class SupplierList(Resource):
     @classmethod
     def post(cls):
         supplier_json = request.get_json()
-        print('request', request.headers)
         supplier_name = supplier_json["name"]
 
         if SupplierModel.find_by_name(supplier_name):

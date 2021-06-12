@@ -1,6 +1,7 @@
 from typing import List
 from db import db
 from models.customer import CustomerModel
+from models.storage import StorageModel
 
 
 class WarehouseModel(db.Model):
@@ -11,6 +12,7 @@ class WarehouseModel(db.Model):
     city = db.Column(db.String(50))
 
     customers = db.relationship("CustomerModel", backref='warehouse', lazy="dynamic")
+    storages = db.relationship("StorageModel", backref='warehouse', lazy="dynamic", cascade="all, delete-orphan")
 
     @classmethod
     def find_by_id(cls, id: int) -> "WarehouseModel":

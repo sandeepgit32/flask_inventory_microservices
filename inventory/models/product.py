@@ -1,5 +1,6 @@
 from typing import List
 from db import db
+from models.storage import StorageModel
 
 
 class ProductModel(db.Model):
@@ -14,6 +15,7 @@ class ProductModel(db.Model):
     measure_unit = db.Column(db.String(10))
 
     supplier_name = db.Column(db.String(100), db.ForeignKey("suppliers.name"), nullable=False)
+    storages = db.relationship("StorageModel", backref='product', lazy="dynamic", cascade="all, delete-orphan")
 
 
     @classmethod

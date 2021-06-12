@@ -1,9 +1,10 @@
 '''
-Upload command: 
+Upload command (In sequence): 
     'python upload.py -d supplier'
     'python upload.py -d product'
     'python upload.py -d warehouse'
     'python upload.py -d customer'
+    'python upload.py -d storage'
 
 1. Upload supplier data first before uploading product data.
 2. Upload warehouse data first before uploading customer data.
@@ -28,6 +29,7 @@ def send_post_request(entity):
             print(el)
             x = requests.post(url, json = el)
             print('status code:', x.status_code)
+            print('Response:',  x.content)
 
 
 if args.d == "supplier":
@@ -38,3 +40,5 @@ elif args.d == "customer":
     send_post_request("customers")
 elif args.d == "warehouse":
     send_post_request("warehouses")
+elif args.d == "storage":
+    send_post_request("storages")

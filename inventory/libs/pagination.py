@@ -1,4 +1,5 @@
 import os
+from flask import abort
 DEFAULT_PAGINATION_NUM_ELEMENTS = os.environ.get('DEFAULT_PAGINATION_NUM_ELEMENTS')
 
 
@@ -6,6 +7,11 @@ def get_paginated_list(results, url, start, limit):
     start = int(start)
     limit = int(limit) if limit != None else int(DEFAULT_PAGINATION_NUM_ELEMENTS)
     count = len(results)
+    if count == 0:
+        return {
+            "count": 0,
+            "results": []
+        }
     if count < start or limit < 0:
         abort(404)
     # make response

@@ -20,6 +20,7 @@ class Config:
     ] # allow blacklisting for access and refresh tokens
     MAX_CONTENT_PATH = 10 * 1024 * 1024  # restrict max upload image size to 10MB
     # SESSION_COOKIE_NAME = os.environ.get('SESSION_COOKIE_NAME')
+    SQLALCHEMY_ECHO = True
 
 
 class ProdConfig(Config):

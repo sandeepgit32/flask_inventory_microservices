@@ -1,0 +1,67 @@
+[
+    {
+        "product_code": "nb_bat",
+        "warehouse_name": "WS1",
+        "quantity": 10
+    },
+    {
+        "product_code": "dc_ball",
+        "warehouse_name": "WS1",
+        "quantity": 40
+    },
+    {
+        "product_code": "foss_ch_men",
+        "warehouse_name": "WS1",
+        "quantity": 5
+    },
+    {
+        "product_code": "nb_bat",
+        "warehouse_name": "WS2",
+        "quantity": 7
+    },
+    {
+        "product_code": "dc_ball",
+        "warehouse_name": "WS2",
+        "quantity": 27
+    },
+    {
+        "product_code": "foss_ch_men",
+        "warehouse_name": "WS2",
+        "quantity": 12
+    },
+    {
+        "product_code": "nb_bat",
+        "warehouse_name": "WS3",
+        "quantity": 0
+    },
+    {
+        "product_code": "dc_ball",
+        "warehouse_name": "WS3",
+        "quantity": 2
+    },
+    {
+        "product_code": "foss_ch_men",
+        "warehouse_name": "WS4",
+        "quantity": 5
+    },
+    {
+        "product_code": "nb_bat",
+        "warehouse_name": "WS4",
+        "quantity": 0
+    },
+    {
+        "product_code": "dc_ball",
+        "warehouse_name": "WS4",
+        "quantity": 15
+    },
+    {
+        "product_code": "foss_ch_men",
+        "warehouse_name": "WS4",
+        "quantity": 4
+    },
+    {
+        "product_code": "foss_ch_men",
+        "warehouse_name": "WS5",
+        "quantity": 15
+    }
+]
