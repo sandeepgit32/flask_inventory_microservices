@@ -9,7 +9,7 @@ class SupplierModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     city = db.Column(db.String(50))
-    zipcode = db.Column(db.Integer)
+    zipcode = db.Column(db.String(20))
     contact_person = db.Column(db.String(80))
     phone = db.Column(db.String(20))
     email = db.Column(db.String(80))

@@ -1,22 +1,22 @@
 [
     {
-        "name": "WS1",
+        "name": "Main_Warehouse",
         "city": "Mumbai"
     },
     {
-        "name": "WS2",
+        "name": "WS1",
         "city": "Nashik"
     },
     {
-        "name": "WS3",
+        "name": "WS2",
         "city": "Mumbai"
     },
     {
-        "name": "WS4",
+        "name": "WS3",
         "city": "Pune"
     },
     {
-        "name": "WS5",
+        "name": "WS4",
         "city": "Pune"
     }
 ]

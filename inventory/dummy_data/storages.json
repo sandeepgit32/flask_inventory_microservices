@@ -60,8 +60,18 @@
         "quantity": 4
     },
     {
+        "product_code": "nb_bat",
+        "warehouse_name": "Main_Warehouse",
+        "quantity": 10
+    },
+    {
+        "product_code": "dc_ball",
+        "warehouse_name": "Main_Warehouse",
+        "quantity": 35
+    },
+    {
         "product_code": "foss_ch_men",
-        "warehouse_name": "WS5",
+        "warehouse_name": "Main_Warehouse",
         "quantity": 15
     }
 ]

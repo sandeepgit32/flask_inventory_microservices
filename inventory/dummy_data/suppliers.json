@@ -1,8 +1,8 @@
 [
     {
         "name": "Sen Sports",
-        "city": "Kolkata",
-        "zipcode": 700067,
+        "city": "Mumbai",
+        "zipcode": "700067",
         "contact_person": "Mr. X",
         "phone": "99999-99999",
         "email": "mr.x@email.com"
@@ -10,7 +10,7 @@
     {
         "name": "Ash_Watches",
         "city": "Mumbai",
-        "zipcode": 347274,
+        "zipcode": "347274",
         "contact_person": "Mr. Y",
         "phone": "99999-99998",
         "email": "mr.y@email.com"
@@ -18,7 +18,7 @@
     {
         "name": "Ash_Motors",
         "city": "Mumbai",
-        "zipcode": 347274,
+        "zipcode": "347274",
         "contact_person": "Mr. Z",
         "phone": "99999-99998",
         "email": "mr.z@email.com"
