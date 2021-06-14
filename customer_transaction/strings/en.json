@@ -1,0 +1,4 @@
+{
+    "transaction_error_inserting": "An error occurred while inserting the transaction.",
+    "transaction_not_found": "No transaction found for {} and {}."
+}

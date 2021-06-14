@@ -46,5 +46,21 @@
         "quantity": 30,
         "total_cost": 5970,
         "measure_unit": "qty"
+    },
+    {
+        "timestamp": "2021-03-09",
+        "supplier_name": "Ash_Watches",
+        "city": "Mumbai",
+        "zipcode": 347274,
+        "contact_person": "Mr. Y",
+        "phone": "99999-99998",
+        "email": "mr.y@email.com",
+        "product_code": "foss_ch_men",
+        "product_name": "Fossil Chronograph Mens Watch",
+        "product_category": "watches",
+        "unit_price": 4199,
+        "quantity": 5,
+        "total_cost": 20995,
+        "measure_unit": "qty"
     }
 ]

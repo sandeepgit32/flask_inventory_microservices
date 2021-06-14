@@ -7,7 +7,7 @@ class TransactionModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.Date)
-    supplier_name = db.Column(db.String(100), nullable=False)
+    customer_name = db.Column(db.String(100), nullable=False)
     city = db.Column(db.String(50))
     zipcode = db.Column(db.Integer)
     contact_person = db.Column(db.String(80))
@@ -31,16 +31,16 @@ class TransactionModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def filter_by_supplier(cls, supplier_name: str) -> List["TransactionModel"]:
-        return cls.query.filter_by(supplier_name=supplier_name)
+    def filter_by_supplier(cls, customer_name: str) -> List["TransactionModel"]:
+        return cls.query.filter_by(customer_name=customer_name)
 
     @classmethod
     def filter_by_product(cls, product_code: str) -> List["TransactionModel"]:
         return cls.query.filter_by(product_code=product_code)
 
     @classmethod
-    def filter_by_product_and_supplier(cls, product_code: str, supplier_name: str) -> List["TransactionModel"]:
-        return cls.query.filter(and_(cls.supplier_name==supplier_name, cls.product_code==product_code)).all()
+    def filter_by_product_and_supplier(cls, product_code: str, customer_name: str) -> List["TransactionModel"]:
+        return cls.query.filter(and_(cls.customer_name==customer_name, cls.product_code==product_code)).all()
 
     
     def save_to_db(self) -> None:
