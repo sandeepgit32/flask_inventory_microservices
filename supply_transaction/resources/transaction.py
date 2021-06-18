@@ -4,6 +4,7 @@ from models.transaction import TransactionModel
 from schemas.transaction import TransactionSchema
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
+from mq_handler.producer import send_message
 
 transaction_schema = TransactionSchema()
 transaction_list_schema = TransactionSchema(many=True)
@@ -30,6 +31,13 @@ class TransactionList(Resource):
         transaction = transaction_schema.load(transaction_json)
         try:
             transaction.save_to_db()
+            # Send message to message queue in order to update the quantity in inventory
+            MESSAGE_BODY = {
+                "product_code": transaction_json["product_code"],
+                "warehouse_name": "Main_Warehouse",
+                "quantity": transaction_json["quantity"]
+            }
+            send_message(MESSAGE_BODY)
         except:
             return {"message": gettext("transaction_error_inserting")}, 500
 
@@ -64,7 +72,6 @@ class TransactionListByProductAndSupplier(Resource):
     # GET /supplytransactions/<string:product_code>/<string:supplier_name>
     @classmethod
     def get(cls, product_code: str, supplier_name: str):
-        print(product_code, supplier_name)
         transaction = TransactionModel.filter_by_product_and_supplier(product_code, supplier_name)
         if transaction:
             return get_paginated_list(

@@ -1,5 +1,5 @@
 from typing import List
-from db import db
+from app import db
 
 
 class TransactionModel(db.Model):

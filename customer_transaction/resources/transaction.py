@@ -75,3 +75,4 @@ class TransactionListByProductAndCustomer(Resource):
             ), 200
 
         return {"message": gettext("transaction_not_found").format(product_code, customer_name)}, 404
+

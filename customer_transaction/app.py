@@ -1,41 +1,35 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_restful import Api
-from marshmallow import ValidationError
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
-from resources.transaction import TransactionList, TransactionListByProduct, TransactionListByCustomer, TransactionListByProductAndCustomer
+db = SQLAlchemy()
+ma = Marshmallow()
 
-from db import db
-from ma import ma
+api = Api()
 
-app = Flask(__name__)
+def create_app(config_name):
+    app = Flask(__name__)
 
-# # Using a production configuration
-# app.config.from_object('config.ProdConfig')
+    # Using a development configuration
+    if config_name == 'development':
+        app.config.from_object('config.DevConfig')
+    # Using a development configuration
+    elif config_name == 'production':
+        app.config.from_object('config.ProdConfig')
 
-# Using a development configuration
-app.config.from_object('config.DevConfig')
+    from resources.transaction import TransactionList, TransactionListByProduct, TransactionListByCustomer, TransactionListByProductAndCustomer
+    # customer transaction endpoints
+    api.add_resource(TransactionList, "/customertransactions")
+    api.add_resource(TransactionListByProduct, "/customertransactions/product/<string:product_code>")
+    api.add_resource(TransactionListByCustomer, "/customertransactions/customer/<string:customer_name>")
+    api.add_resource(TransactionListByProductAndCustomer, "/customertransactions/<string:product_code>/<string:customer_name>")
 
-api = Api(app)
-
-
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
-@app.errorhandler(ValidationError)
-def handle_marshmallow_validation(err):
-    return jsonify(err.messages), 400
-
-
-# customer transaction endpoints
-api.add_resource(TransactionList, "/customertransactions")
-api.add_resource(TransactionListByProduct, "/customertransactions/product/<string:product_code>")
-api.add_resource(TransactionListByCustomer, "/customertransactions/customer/<string:customer_name>")
-api.add_resource(TransactionListByProductAndCustomer, "/customertransactions/<string:product_code>/<string:customer_name>")
-
-
-if __name__ == "__main__":
+    api.init_app(app)
     db.init_app(app)
     ma.init_app(app)
-    app.run(port=5000, debug=True)
+
+    with app.app_context():
+        db.create_all()
+    
+    return app

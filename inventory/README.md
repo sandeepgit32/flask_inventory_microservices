@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/61983525/pytest-runtimeerror-no-application-found-either-work-inside-a-view-function-or
