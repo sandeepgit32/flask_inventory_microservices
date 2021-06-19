@@ -1,5 +1,6 @@
 from typing import List
 from db import db
+from sqlalchemy import and_
 
 
 class TransactionModel(db.Model):

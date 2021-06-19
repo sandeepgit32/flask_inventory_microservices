@@ -4,7 +4,7 @@ from models.transaction import TransactionModel
 from schemas.transaction import TransactionSchema
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
-from mq_handler.producer import send_message
+from producer import send_message
 
 transaction_schema = TransactionSchema()
 transaction_list_schema = TransactionSchema(many=True)
@@ -69,7 +69,7 @@ class TransactionListBySupplier(Resource):
 
 
 class TransactionListByProductAndSupplier(Resource):
-    # GET /supplytransactions/<string:product_code>/<string:supplier_name>
+    # GET /supplytransactions/product_suplier/<string:product_code>/<string:supplier_name>
     @classmethod
     def get(cls, product_code: str, supplier_name: str):
         transaction = TransactionModel.filter_by_product_and_supplier(product_code, supplier_name)

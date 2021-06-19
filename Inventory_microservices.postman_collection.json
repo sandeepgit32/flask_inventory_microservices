@@ -6,451 +6,200 @@
 	},
 	"item": [
 		{
-			"name": "products",
+			"name": "Inventory",
 			"item": [
 				{
-					"name": "Get all products",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/products",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"products"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View a specific product",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/product/<product_code>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"product",
-								"<product_code>"
-							]
-						}
-					},
-					"response": [
+					"name": "storages",
+					"item": [
 						{
-							"name": "View a specific product",
-							"originalRequest": {
+							"name": "Get all storages",
+							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/product/nb_bat",
+									"raw": "{{url}}/storages",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
+										"storages"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View storage items for a specific product",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/storages/product/<product_code>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"storages",
 										"product",
-										"nb_bat"
+										"<product_code>"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "214"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:35:44 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"id\": 1,\n    \"name\": \"NB cricket bat\",\n    \"product_code\": \"nb_bat\",\n    \"price_sell\": 1099,\n    \"measure_unit\": \"qty\",\n    \"category\": \"sports\",\n    \"price_buy\": 899,\n    \"supplier_name\": \"Sen Sports\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Delete a specific product",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/product/<product_code>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"product",
-								"<product_code>"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Delete a specific product",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{url}}/product/nb_bat",
-									"host": [
-										"{{url}}"
+									"name": "View storage items for a specific product",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/storages/product/nb_bat",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"storages",
+												"product",
+												"nb_bat"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "685"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Jun 2021 13:25:04 GMT"
+										}
 									],
-									"path": [
-										"product",
-										"nb_bat"
-									]
+									"cookie": [],
+									"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 4,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"id\": 1,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 10,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 4,\n            \"warehouse_name\": \"WS2\",\n            \"quantity\": 7,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 7,\n            \"warehouse_name\": \"WS3\",\n            \"quantity\": 0,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 10,\n            \"warehouse_name\": \"WS4\",\n            \"quantity\": 0,\n            \"product_code\": \"nb_bat\"\n        }\n    ]\n}"
 								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "38"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:37:32 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"message\": \"Product deleted.\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Create a new product",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/products",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"products"
 							]
-						}
-					},
-					"response": [
+						},
 						{
-							"name": "Create a new product",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "{{url}}/products",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"products"
-									]
-								}
-							},
-							"_postman_previewlanguage": null,
-							"header": null,
-							"cookie": [],
-							"body": "{\n    \"product_code\": \"nb_bat\",\n    \"name\": \"NB cricket bat\",\n    \"category\": \"sports\",\n    \"price_buy\": \"899\",\n    \"price_sell\": \"1099\",\n    \"measure_unit\": \"qty\",\n    \"supplier_name\": \"Sen Sports\"\n}"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "suppliers",
-			"item": [
-				{
-					"name": "Get all suppliers",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/suppliers",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"suppliers"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Getting all suppliers",
-							"originalRequest": {
+							"name": "View storage items for a specific warehouse",
+							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/supplier/1",
+									"raw": "{{url}}/storages/warehouse/<warehouse_name>",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"supplier",
-										"1"
+										"storages",
+										"warehouse",
+										"<warehouse_name>"
 									]
 								}
 							},
-							"status": "Bad Gateway",
-							"code": 502,
-							"_postman_previewlanguage": "html",
-							"header": [
+							"response": [
 								{
-									"key": "Server",
-									"value": "nginx/1.14.0 (Ubuntu)"
-								},
-								{
-									"key": "Date",
-									"value": "Sun, 06 Jun 2021 04:18:20 GMT"
-								},
-								{
-									"key": "Content-Type",
-									"value": "text/html"
-								},
-								{
-									"key": "Content-Length",
-									"value": "182"
-								},
-								{
-									"key": "Connection",
-									"value": "keep-alive"
+									"name": "Vies storage items for a specific warehouse",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/storages/warehouse/WS1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"storages",
+												"warehouse",
+												"WS1"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "548"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Jun 2021 13:25:39 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 3,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"id\": 1,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 10,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 2,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 40,\n            \"product_code\": \"dc_ball\"\n        },\n        {\n            \"id\": 3,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 5,\n            \"product_code\": \"foss_ch_men\"\n        }\n    ]\n}"
 								}
-							],
-							"cookie": [],
-							"body": "<html>\n    <head>\n        <title>502 Bad Gateway</title>\n    </head>\n    <body bgcolor=\"white\">\n        <center>\n            <h1>502 Bad Gateway</h1>\n        </center>\n        <hr>\n        <center>nginx/1.14.0 (Ubuntu)</center>\n    </body>\n</html>"
-						}
-					]
-				},
-				{
-					"name": "View a specific supplier",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/supplier/<id>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"supplier",
-								"<id>"
 							]
-						}
-					},
-					"response": [
+						},
 						{
-							"name": "View a specific supplier",
-							"originalRequest": {
+							"name": "View a specific storage item",
+							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/supplier/1",
+									"raw": "{{url}}/storage/<product_code>/<warehouse_name>",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"supplier",
-										"1"
+										"storage",
+										"<product_code>",
+										"<warehouse_name>"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "178"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:39:00 GMT"
+									"name": "View a specific storage item",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/storage/nb_bat/WS2",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"storage",
+												"nb_bat",
+												"WS2"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
 								}
-							],
-							"cookie": [],
-							"body": "{\n    \"phone\": \"99999-99999\",\n    \"id\": 1,\n    \"name\": \"Sen Sports\",\n    \"zipcode\": 700067,\n    \"email\": \"mr.x@email.com\",\n    \"city\": \"Kolkata\",\n    \"contact_person\": \"Mr. X\"\n}"
-						}
-					]
-				},
-				{
-					"name": "View product list for a specific supplier",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/supplier/<id>/products",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"supplier",
-								"<id>",
-								"products"
 							]
-						}
-					},
-					"response": [
+						},
 						{
-							"name": "View product list for a specific supplier",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{url}}/supplier/1/products",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"supplier",
-										"1",
-										"products"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "400"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Fri, 11 Jun 2021 11:13:09 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 1,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"product_code\": \"dc_ball\",\n            \"measure_unit\": \"qty\",\n            \"price_buy\": 199,\n            \"category\": \"sports\",\n            \"name\": \"DUCE Ball\",\n            \"price_sell\": 299,\n            \"id\": 2,\n            \"supplier_name\": \"Sen Sports\"\n        }\n    ]\n}"
-						}
-					]
-				},
-				{
-					"name": "Delete a specific supplier",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/supplier/<id>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"supplier",
-								"<id>"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Delete a specific supplier",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{url}}/supplier/3",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"supplier",
-										"3"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "39"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:42:26 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"message\": \"Supplier deleted.\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Create a new supplier",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/suppliers",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"suppliers"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Create a new supplier",
-							"originalRequest": {
-								"method": "POST",
+							"name": "Update a storage item",
+							"request": {
+								"method": "PUT",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"Ash_Motors\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": 347274,\n    \"contact_person\": \"Mr. Y\",\n    \"phone\": \"99999-99998\",\n    \"email\": \"mr.y@email.com\"\n}",
+									"raw": "{\n    \"quantity\": 2\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -458,212 +207,80 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/suppliers",
+									"raw": "{{url}}/storage/<product_code>/<warehouse_name>/update",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"suppliers"
+										"storage",
+										"<product_code>",
+										"<warehouse_name>",
+										"update"
 									]
 								}
 							},
-							"status": "CREATED",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "177"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:41:46 GMT"
+									"name": "Update a storage item",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"quantity\": 2\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/storage/nb_bat/WS1/update",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"storage",
+												"nb_bat",
+												"WS1",
+												"update"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "94"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Jun 2021 14:31:42 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"quantity\": 9,\n    \"product_code\": \"nb_bat\",\n    \"warehouse_name\": \"WS1\",\n    \"id\": 1\n}"
 								}
-							],
-							"cookie": [],
-							"body": "{\n    \"phone\": \"99999-99998\",\n    \"id\": 3,\n    \"name\": \"Ash_Motors\",\n    \"zipcode\": 347274,\n    \"email\": \"mr.y@email.com\",\n    \"city\": \"Mumbai\",\n    \"contact_person\": \"Mr. Y\"\n}"
-						}
-					]
-				},
-				{
-					"name": "View all suppliers by city",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/suppliers/<city>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"suppliers",
-								"<city>"
 							]
-						}
-					},
-					"response": [
+						},
 						{
-							"name": "View all suppliers by city",
-							"originalRequest": {
-								"method": "GET",
+							"name": "Insert a storage item",
+							"request": {
+								"method": "PUT",
 								"header": [],
-								"url": {
-									"raw": "{{url}}/suppliers/Mumbai",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"suppliers",
-										"Mumbai"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "361"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Fri, 11 Jun 2021 11:17:55 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 1,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"contact_person\": \"Mr. Y\",\n            \"zipcode\": 347274,\n            \"phone\": \"99999-99998\",\n            \"email\": \"mr.y@email.com\",\n            \"id\": 2,\n            \"city\": \"Mumbai\",\n            \"name\": \"Ash_Watches\"\n        }\n    ]\n}"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "customers",
-			"item": [
-				{
-					"name": "Get all customers",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/customers",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"customers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View a specific customer",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/customer/<id>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"customer",
-								"<id>"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "View a specific customer",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{url}}/customer/1",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"customer",
-										"1"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "245"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:22:51 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"name\": \"Ligula Nullam Feugiat LLP\",\n    \"zipcode\": 46211,\n    \"city\": \"Mumbai\",\n    \"id\": 1,\n    \"warehouse_id\": 1,\n    \"contact_person\": \"Macy Merritt\",\n    \"email\": \"ornare.egestas.ligula@elitpretiumet.net\",\n    \"phone\": \"9180739405\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Create a new customer",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/customers",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"customers"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Create a new customers",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"Ligula Nullam Feugiat LLP\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": \"046211\",\n    \"contact_person\": \"Macy Merritt\",\n    \"phone\": \"9180739405\",\n    \"email\": \"ornare.egestas.ligula@elitpretiumet.net\"\n}",
+									"raw": "{\n    \"quantity\": 5\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -671,374 +288,281 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/customers",
+									"raw": "{{url}}/storage/<product_code>/<warehouse_name>/insert",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"customers"
+										"storage",
+										"<product_code>",
+										"<warehouse_name>",
+										"insert"
 									]
 								}
 							},
-							"_postman_previewlanguage": null,
-							"header": null,
-							"cookie": [],
-							"body": null
-						}
-					]
-				},
-				{
-					"name": "Delete a customer",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/customer/<id>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"customer",
-								"<id>"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Delete a customer",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{url}}/customer/1",
-									"host": [
-										"{{url}}"
+							"response": [
+								{
+									"name": "Update a storage item",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"quantity\": 5\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/storage/nb_bat/WS1/insert",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"storage",
+												"nb_bat",
+												"WS1",
+												"insert"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "94"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Jun 2021 14:29:23 GMT"
+										}
 									],
-									"path": [
-										"customer",
-										"1"
-									]
+									"cookie": [],
+									"body": "{\n    \"quantity\": 5,\n    \"product_code\": \"nb_bat\",\n    \"warehouse_name\": \"WS1\",\n    \"id\": 1\n}"
 								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "39"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:24:27 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"message\": \"Customer deleted.\"\n}"
+							]
 						}
 					]
 				},
 				{
-					"name": "View all customers by city",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/customers/<city>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"customers",
-								"<city>"
-							]
-						}
-					},
-					"response": [
+					"name": "warehouses",
+					"item": [
 						{
-							"name": "View all customers by city",
-							"originalRequest": {
+							"name": "Get all warehouse",
+							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/customers/Mumbai",
+									"raw": "{{url}}/warehouses",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"customers",
-										"Mumbai"
+										"warehouses"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "1113"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Fri, 11 Jun 2021 11:14:50 GMT"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 4,\n    \"previous\": \"\",\n    \"next\": \"http://localhost:5000/customers/Mumbai?start=4&limit=3\",\n    \"results\": [\n        {\n            \"city\": \"Mumbai\",\n            \"name\": \"Ligula Nullam Feugiat LLP\",\n            \"contact_person\": \"Macy Merritt\",\n            \"id\": 2,\n            \"zipcode\": 46211,\n            \"email\": \"ornare.egestas.ligula@elitpretiumet.net\",\n            \"warehouse_id\": 1,\n            \"phone\": \"9180739405\"\n        },\n        {\n            \"city\": \"Mumbai\",\n            \"name\": \"Lorem Ipsum Sodales Corporation\",\n            \"contact_person\": \"Sage Gonzalez\",\n            \"id\": 3,\n            \"zipcode\": 43761,\n            \"email\": \"at.augue.id@felisullamcorperviverra.ca\",\n            \"warehouse_id\": 2,\n            \"phone\": \"9278695929\"\n        },\n        {\n            \"city\": \"Mumbai\",\n            \"name\": \"Curae; Ltd\",\n            \"contact_person\": \"Burke Eaton\",\n            \"id\": 7,\n            \"zipcode\": 8868,\n            \"email\": \"Nunc@molestieSedid.ca\",\n            \"warehouse_id\": 5,\n            \"phone\": \"9522609142\"\n        }\n    ]\n}"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "warehouses",
-			"item": [
-				{
-					"name": "Get all warehouse",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/warehouses",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"warehouses"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View a specific warehouse",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/warehouse/<id>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"warehouse",
-								"<id>"
-							]
-						}
-					},
-					"response": [
+							"response": []
+						},
 						{
 							"name": "View a specific warehouse",
-							"originalRequest": {
+							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/warehouse/1",
+									"raw": "{{url}}/warehouse/<id>",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"warehouse",
-										"1"
+										"<id>"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "57"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:14:40 GMT"
+									"name": "View a specific warehouse",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/warehouse/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"warehouse",
+												"1"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "57"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:14:40 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"city\": \"Mumbai\",\n    \"id\": 1,\n    \"name\": \"WS1\"\n}"
 								}
-							],
-							"cookie": [],
-							"body": "{\n    \"city\": \"Mumbai\",\n    \"id\": 1,\n    \"name\": \"WS1\"\n}"
-						}
-					]
-				},
-				{
-					"name": "View all warehouses by city",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/warehouses/<city>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"warehouses",
-								"<city>"
 							]
-						}
-					},
-					"response": [
+						},
 						{
 							"name": "View all warehouses by city",
-							"originalRequest": {
+							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/warehouses/Mumbai",
+									"raw": "{{url}}/warehouses/<city>",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"warehouses",
-										"Mumbai"
+										"<city>"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "306"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Fri, 11 Jun 2021 11:16:04 GMT"
+									"name": "View all warehouses by city",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/warehouses/Mumbai",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"warehouses",
+												"Mumbai"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "306"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 11 Jun 2021 11:16:04 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 2,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"name\": \"WS1\",\n            \"city\": \"Mumbai\",\n            \"id\": 1\n        },\n        {\n            \"name\": \"WS3\",\n            \"city\": \"Mumbai\",\n            \"id\": 3\n        }\n    ]\n}"
 								}
-							],
-							"cookie": [],
-							"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 2,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"name\": \"WS1\",\n            \"city\": \"Mumbai\",\n            \"id\": 1\n        },\n        {\n            \"name\": \"WS3\",\n            \"city\": \"Mumbai\",\n            \"id\": 3\n        }\n    ]\n}"
-						}
-					]
-				},
-				{
-					"name": "View all associated customers for a specific warehouse",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/warehouse/<id>/customers",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"warehouse",
-								"<id>",
-								"customers"
 							]
-						}
-					},
-					"response": [
+						},
 						{
 							"name": "View all associated customers for a specific warehouse",
-							"originalRequest": {
+							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/warehouse/1/customers",
+									"raw": "{{url}}/warehouse/<id>/customers",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"warehouse",
-										"1",
+										"<id>",
 										"customers"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "750"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Fri, 11 Jun 2021 11:28:00 GMT"
+									"name": "View all associated customers for a specific warehouse",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/warehouse/1/customers",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"warehouse",
+												"1",
+												"customers"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "750"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 11 Jun 2021 11:28:00 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 2,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"city\": \"Mumbai\",\n            \"warehouse_id\": 1,\n            \"zipcode\": 46211,\n            \"phone\": \"9180739405\",\n            \"id\": 2,\n            \"name\": \"Ligula Nullam Feugiat LLP\",\n            \"email\": \"ornare.egestas.ligula@elitpretiumet.net\",\n            \"contact_person\": \"Macy Merritt\"\n        },\n        {\n            \"city\": \"Nashik\",\n            \"warehouse_id\": 1,\n            \"zipcode\": 5422,\n            \"phone\": \"9359433470\",\n            \"id\": 8,\n            \"name\": \"Auctor Velit Foundation\",\n            \"email\": \"penatibus@idnuncinterdum.org\",\n            \"contact_person\": \"Michael Carver\"\n        }\n    ]\n}"
 								}
-							],
-							"cookie": [],
-							"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 2,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"city\": \"Mumbai\",\n            \"warehouse_id\": 1,\n            \"zipcode\": 46211,\n            \"phone\": \"9180739405\",\n            \"id\": 2,\n            \"name\": \"Ligula Nullam Feugiat LLP\",\n            \"email\": \"ornare.egestas.ligula@elitpretiumet.net\",\n            \"contact_person\": \"Macy Merritt\"\n        },\n        {\n            \"city\": \"Nashik\",\n            \"warehouse_id\": 1,\n            \"zipcode\": 5422,\n            \"phone\": \"9359433470\",\n            \"id\": 8,\n            \"name\": \"Auctor Velit Foundation\",\n            \"email\": \"penatibus@idnuncinterdum.org\",\n            \"contact_person\": \"Michael Carver\"\n        }\n    ]\n}"
-						}
-					]
-				},
-				{
-					"name": "Create a warehouse",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"WS2\",\n    \"city\": \"Nashik\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/warehouses",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"warehouses"
 							]
-						}
-					},
-					"response": [
+						},
 						{
 							"name": "Create a warehouse",
-							"originalRequest": {
+							"request": {
 								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"WS1\",\n    \"city\": \"Mumbai\"\n}",
+									"raw": "{\n    \"name\": \"WS2\",\n    \"city\": \"Nashik\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1055,125 +579,954 @@
 									]
 								}
 							},
-							"status": "CREATED",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "57"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:09:32 GMT"
+									"name": "Create a warehouse",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"WS1\",\n    \"city\": \"Mumbai\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/warehouses",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"warehouses"
+											]
+										}
+									},
+									"status": "CREATED",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "57"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:09:32 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"city\": \"Mumbai\",\n    \"id\": 1,\n    \"name\": \"WS1\"\n}"
 								}
-							],
-							"cookie": [],
-							"body": "{\n    \"city\": \"Mumbai\",\n    \"id\": 1,\n    \"name\": \"WS1\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Delete a warehouse",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/warehouse/<id>",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"warehouse",
-								"<id>"
 							]
-						}
-					},
-					"response": [
+						},
 						{
 							"name": "Delete a warehouse",
-							"originalRequest": {
+							"request": {
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/warehouse/6",
+									"raw": "{{url}}/warehouse/<id>",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"warehouse",
-										"6"
+										"<id>"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
+							"response": [
 								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Content-Length",
-									"value": "40"
-								},
-								{
-									"key": "Server",
-									"value": "Werkzeug/2.0.1 Python/3.7.5"
-								},
-								{
-									"key": "Date",
-									"value": "Wed, 09 Jun 2021 11:18:28 GMT"
+									"name": "Delete a warehouse",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/warehouse/6",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"warehouse",
+												"6"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "40"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:18:28 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Warehouse deleted.\"\n}"
 								}
-							],
-							"cookie": [],
-							"body": "{\n    \"message\": \"Warehouse deleted.\"\n}"
+							]
+						}
+					]
+				},
+				{
+					"name": "customers",
+					"item": [
+						{
+							"name": "Get all customers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customers",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View a specific customer",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customer/<id>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customer",
+										"<id>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "View a specific customer",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/customer/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"customer",
+												"1"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "245"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:22:51 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"name\": \"Ligula Nullam Feugiat LLP\",\n    \"zipcode\": 46211,\n    \"city\": \"Mumbai\",\n    \"id\": 1,\n    \"warehouse_id\": 1,\n    \"contact_person\": \"Macy Merritt\",\n    \"email\": \"ornare.egestas.ligula@elitpretiumet.net\",\n    \"phone\": \"9180739405\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Create a new customer",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customers",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Create a new customers",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Ligula Nullam Feugiat LLP\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": \"046211\",\n    \"contact_person\": \"Macy Merritt\",\n    \"phone\": \"9180739405\",\n    \"email\": \"ornare.egestas.ligula@elitpretiumet.net\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/customers",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"customers"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								}
+							]
+						},
+						{
+							"name": "Delete a customer",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customer/<id>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customer",
+										"<id>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Delete a customer",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/customer/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"customer",
+												"1"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "39"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:24:27 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Customer deleted.\"\n}"
+								}
+							]
+						},
+						{
+							"name": "View all customers by city",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customers/<city>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customers",
+										"<city>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "View all customers by city",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/customers/Mumbai",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"customers",
+												"Mumbai"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1113"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 11 Jun 2021 11:14:50 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 4,\n    \"previous\": \"\",\n    \"next\": \"http://localhost:5000/customers/Mumbai?start=4&limit=3\",\n    \"results\": [\n        {\n            \"city\": \"Mumbai\",\n            \"name\": \"Ligula Nullam Feugiat LLP\",\n            \"contact_person\": \"Macy Merritt\",\n            \"id\": 2,\n            \"zipcode\": 46211,\n            \"email\": \"ornare.egestas.ligula@elitpretiumet.net\",\n            \"warehouse_id\": 1,\n            \"phone\": \"9180739405\"\n        },\n        {\n            \"city\": \"Mumbai\",\n            \"name\": \"Lorem Ipsum Sodales Corporation\",\n            \"contact_person\": \"Sage Gonzalez\",\n            \"id\": 3,\n            \"zipcode\": 43761,\n            \"email\": \"at.augue.id@felisullamcorperviverra.ca\",\n            \"warehouse_id\": 2,\n            \"phone\": \"9278695929\"\n        },\n        {\n            \"city\": \"Mumbai\",\n            \"name\": \"Curae; Ltd\",\n            \"contact_person\": \"Burke Eaton\",\n            \"id\": 7,\n            \"zipcode\": 8868,\n            \"email\": \"Nunc@molestieSedid.ca\",\n            \"warehouse_id\": 5,\n            \"phone\": \"9522609142\"\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "suppliers",
+					"item": [
+						{
+							"name": "Get all suppliers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/suppliers",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"suppliers"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Getting all suppliers",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/supplier/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"supplier",
+												"1"
+											]
+										}
+									},
+									"status": "Bad Gateway",
+									"code": 502,
+									"_postman_previewlanguage": "html",
+									"header": [
+										{
+											"key": "Server",
+											"value": "nginx/1.14.0 (Ubuntu)"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 06 Jun 2021 04:18:20 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "text/html"
+										},
+										{
+											"key": "Content-Length",
+											"value": "182"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "<html>\n    <head>\n        <title>502 Bad Gateway</title>\n    </head>\n    <body bgcolor=\"white\">\n        <center>\n            <h1>502 Bad Gateway</h1>\n        </center>\n        <hr>\n        <center>nginx/1.14.0 (Ubuntu)</center>\n    </body>\n</html>"
+								}
+							]
+						},
+						{
+							"name": "View a specific supplier",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/supplier/<id>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"supplier",
+										"<id>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "View a specific supplier",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/supplier/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"supplier",
+												"1"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "178"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:39:00 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"phone\": \"99999-99999\",\n    \"id\": 1,\n    \"name\": \"Sen Sports\",\n    \"zipcode\": 700067,\n    \"email\": \"mr.x@email.com\",\n    \"city\": \"Kolkata\",\n    \"contact_person\": \"Mr. X\"\n}"
+								}
+							]
+						},
+						{
+							"name": "View product list for a specific supplier",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/supplier/<id>/products",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"supplier",
+										"<id>",
+										"products"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "View product list for a specific supplier",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/supplier/1/products",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"supplier",
+												"1",
+												"products"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "400"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 11 Jun 2021 11:13:09 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 1,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"product_code\": \"dc_ball\",\n            \"measure_unit\": \"qty\",\n            \"price_buy\": 199,\n            \"category\": \"sports\",\n            \"name\": \"DUCE Ball\",\n            \"price_sell\": 299,\n            \"id\": 2,\n            \"supplier_name\": \"Sen Sports\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete a specific supplier",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/supplier/<id>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"supplier",
+										"<id>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Delete a specific supplier",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/supplier/3",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"supplier",
+												"3"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "39"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:42:26 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Supplier deleted.\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Create a new supplier",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/suppliers",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"suppliers"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Create a new supplier",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Ash_Motors\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": 347274,\n    \"contact_person\": \"Mr. Y\",\n    \"phone\": \"99999-99998\",\n    \"email\": \"mr.y@email.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/suppliers",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"suppliers"
+											]
+										}
+									},
+									"status": "CREATED",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "177"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:41:46 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"phone\": \"99999-99998\",\n    \"id\": 3,\n    \"name\": \"Ash_Motors\",\n    \"zipcode\": \"347274\",\n    \"email\": \"mr.y@email.com\",\n    \"city\": \"Mumbai\",\n    \"contact_person\": \"Mr. Y\"\n}"
+								}
+							]
+						},
+						{
+							"name": "View all suppliers by city",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/suppliers/<city>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"suppliers",
+										"<city>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "View all suppliers by city",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/suppliers/Mumbai",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"suppliers",
+												"Mumbai"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "361"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 11 Jun 2021 11:17:55 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"start\": 1,\n    \"limit\": 3,\n    \"count\": 1,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"contact_person\": \"Mr. Y\",\n            \"zipcode\": 347274,\n            \"phone\": \"99999-99998\",\n            \"email\": \"mr.y@email.com\",\n            \"id\": 2,\n            \"city\": \"Mumbai\",\n            \"name\": \"Ash_Watches\"\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "products",
+					"item": [
+						{
+							"name": "Get all products",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/products",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View a specific product",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/product/<product_code>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"product",
+										"<product_code>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "View a specific product",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/product/nb_bat",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"product",
+												"nb_bat"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "214"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:35:44 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": 1,\n    \"name\": \"NB cricket bat\",\n    \"product_code\": \"nb_bat\",\n    \"price_sell\": 1099,\n    \"measure_unit\": \"qty\",\n    \"category\": \"sports\",\n    \"price_buy\": 899,\n    \"supplier_name\": \"Sen Sports\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete a specific product",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/product/<product_code>",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"product",
+										"<product_code>"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Delete a specific product",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/product/nb_bat",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"product",
+												"nb_bat"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "38"
+										},
+										{
+											"key": "Server",
+											"value": "Werkzeug/2.0.1 Python/3.7.5"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 09 Jun 2021 11:37:32 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Product deleted.\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Create a new product",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/products",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Create a new product",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/products",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"products"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "{\n    \"product_code\": \"nb_bat\",\n    \"name\": \"NB cricket bat\",\n    \"category\": \"sports\",\n    \"price_buy\": \"899\",\n    \"price_sell\": \"1099\",\n    \"measure_unit\": \"qty\",\n    \"supplier_name\": \"Sen Sports\"\n}"
+								}
+							]
 						}
 					]
 				}
 			]
 		},
 		{
-			"name": "storages",
+			"name": "Supply transaction",
 			"item": [
 				{
-					"name": "Get all storages",
+					"name": "Get all transactions",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/storages",
+							"raw": "{{url}}/supplytransactions",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"storages"
+								"supplytransactions"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "View storage items for a specific product",
+					"name": "View all transactions for a specific product",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/storages/product/<product_code>",
+							"raw": "{{url}}/supplytransactions/product/<product_code>",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"storages",
+								"supplytransactions",
 								"product",
 								"<product_code>"
 							]
@@ -1181,17 +1534,17 @@
 					},
 					"response": [
 						{
-							"name": "View storage items for a specific product",
+							"name": "View all transactions for a specific product",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/storages/product/nb_bat",
+									"raw": "{{url}}/supplytransactions/product/nb_bat",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"storages",
+										"supplytransactions",
 										"product",
 										"nb_bat"
 									]
@@ -1207,7 +1560,7 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "685"
+									"value": "665"
 								},
 								{
 									"key": "Server",
@@ -1215,46 +1568,46 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 12 Jun 2021 13:25:04 GMT"
+									"value": "Sun, 13 Jun 2021 23:42:42 GMT"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 4,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"id\": 1,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 10,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 4,\n            \"warehouse_name\": \"WS2\",\n            \"quantity\": 7,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 7,\n            \"warehouse_name\": \"WS3\",\n            \"quantity\": 0,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 10,\n            \"warehouse_name\": \"WS4\",\n            \"quantity\": 0,\n            \"product_code\": \"nb_bat\"\n        }\n    ]\n}"
+							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 1,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"product_name\": \"NB cricket bat\",\n            \"measure_unit\": \"qty\",\n            \"contact_person\": \"Mr. X\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"product_code\": \"nb_bat\",\n            \"city\": \"Mumbai\",\n            \"id\": 4,\n            \"zipcode\": 700067,\n            \"supplier_name\": \"Sen Sports\",\n            \"total_cost\": 8990,\n            \"product_category\": \"sports\",\n            \"quantity\": 10,\n            \"unit_price\": 899,\n            \"timestamp\": \"2021-03-05\"\n        }\n    ]\n}"
 						}
 					]
 				},
 				{
-					"name": "View storage items for a specific warehouse",
+					"name": "View all transactions for a specific supplier",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/storages/warehouse/<warehouse_name>",
+							"raw": "{{url}}/supplytransactions/supplier/<supplier_name>",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"storages",
-								"warehouse",
-								"<warehouse_name>"
+								"supplytransactions",
+								"supplier",
+								"<supplier_name>"
 							]
 						}
 					},
 					"response": [
 						{
-							"name": "Vies storage items for a specific warehouse",
+							"name": "View all transactions for a specific supplier",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/storages/warehouse/WS1",
+									"raw": "{{url}}/supplytransactions/supplier/Sen%20Sports",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"storages",
-										"warehouse",
-										"WS1"
+										"supplytransactions",
+										"supplier",
+										"Sen%20Sports"
 									]
 								}
 							},
@@ -1268,7 +1621,7 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "548"
+									"value": "1215"
 								},
 								{
 									"key": "Server",
@@ -1276,64 +1629,85 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 12 Jun 2021 13:25:39 GMT"
+									"value": "Sun, 13 Jun 2021 23:45:17 GMT"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 3,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"id\": 1,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 10,\n            \"product_code\": \"nb_bat\"\n        },\n        {\n            \"id\": 2,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 40,\n            \"product_code\": \"dc_ball\"\n        },\n        {\n            \"id\": 3,\n            \"warehouse_name\": \"WS1\",\n            \"quantity\": 5,\n            \"product_code\": \"foss_ch_men\"\n        }\n    ]\n}"
+							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 2,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"product_name\": \"NB cricket bat\",\n            \"measure_unit\": \"qty\",\n            \"contact_person\": \"Mr. X\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"product_code\": \"nb_bat\",\n            \"city\": \"Mumbai\",\n            \"id\": 4,\n            \"zipcode\": 700067,\n            \"supplier_name\": \"Sen Sports\",\n            \"total_cost\": 8990,\n            \"product_category\": \"sports\",\n            \"quantity\": 10,\n            \"unit_price\": 899,\n            \"timestamp\": \"2021-03-05\"\n        },\n        {\n            \"product_name\": \"DUCE Ball\",\n            \"measure_unit\": \"qty\",\n            \"contact_person\": \"Mr. X\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"product_code\": \"dc_ball\",\n            \"city\": \"Mumbai\",\n            \"id\": 6,\n            \"zipcode\": 700067,\n            \"supplier_name\": \"Sen Sports\",\n            \"total_cost\": 5970,\n            \"product_category\": \"sports\",\n            \"quantity\": 30,\n            \"unit_price\": 199,\n            \"timestamp\": \"2021-03-07\"\n        }\n    ]\n}"
 						}
 					]
 				},
 				{
-					"name": "View a specific storage item",
+					"name": "View all transaction for a specific product and supplier",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/storage/<product_code>/<warehouse_name>",
+							"raw": "{{url}}/supplytransactions/product_suplier/<product_code>/<supplier_name>",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"storage",
+								"supplytransactions",
+								"product_suplier",
 								"<product_code>",
-								"<warehouse_name>"
+								"<supplier_name>"
 							]
 						}
 					},
 					"response": [
 						{
-							"name": "View a specific storage item",
+							"name": "View all transaction for a specific product and supplier",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/storage/nb_bat/WS2",
+									"raw": "{{url}}/supplytransactions/product_suplier/nb_bat/Sen%20Sports",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"storage",
+										"supplytransactions",
+										"product_suplier",
 										"nb_bat",
-										"WS2"
+										"Sen%20Sports"
 									]
 								}
 							},
-							"_postman_previewlanguage": null,
-							"header": null,
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "3996"
+								},
+								{
+									"key": "Server",
+									"value": "Werkzeug/2.0.1 Python/3.7.5"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jun 2021 13:47:58 GMT"
+								}
+							],
 							"cookie": [],
-							"body": null
+							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 7,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"quantity\": 10,\n            \"unit_price\": 899,\n            \"product_name\": \"NB cricket bat\",\n            \"contact_person\": \"Mr. X\",\n            \"supplier_name\": \"Sen Sports\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"city\": \"Mumbai\",\n            \"product_code\": \"nb_bat\",\n            \"id\": 4,\n            \"product_category\": \"sports\",\n            \"measure_unit\": \"qty\",\n            \"total_cost\": 8990,\n            \"timestamp\": \"2021-03-05\",\n            \"zipcode\": 700067\n        },\n        {\n            \"quantity\": 12,\n            \"unit_price\": 899,\n            \"product_name\": \"NB cricket bat\",\n            \"contact_person\": \"Mr. X\",\n            \"supplier_name\": \"Sen Sports\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"city\": \"Mumbai\",\n            \"product_code\": \"nb_bat\",\n            \"id\": 8,\n            \"product_category\": \"sports\",\n            \"measure_unit\": \"qty\",\n            \"total_cost\": 10788,\n            \"timestamp\": \"2021-03-05\",\n            \"zipcode\": 700067\n        },\n        {\n            \"quantity\": 12,\n            \"unit_price\": 899,\n            \"product_name\": \"NB cricket bat\",\n            \"contact_person\": \"Mr. X\",\n            \"supplier_name\": \"Sen Sports\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"city\": \"Mumbai\",\n            \"product_code\": \"nb_bat\",\n            \"id\": 9,\n            \"product_category\": \"sports\",\n            \"measure_unit\": \"qty\",\n            \"total_cost\": 10788,\n            \"timestamp\": \"2021-03-05\",\n            \"zipcode\": 700067\n        },\n        {\n            \"quantity\": 12,\n            \"unit_price\": 899,\n            \"product_name\": \"NB cricket bat\",\n            \"contact_person\": \"Mr. X\",\n            \"supplier_name\": \"Sen Sports\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"city\": \"Mumbai\",\n            \"product_code\": \"nb_bat\",\n            \"id\": 10,\n            \"product_category\": \"sports\",\n            \"measure_unit\": \"qty\",\n            \"total_cost\": 10788,\n            \"timestamp\": \"2021-03-05\",\n            \"zipcode\": 700067\n        },\n        {\n            \"quantity\": 10,\n            \"unit_price\": 899,\n            \"product_name\": \"NB cricket bat\",\n            \"contact_person\": \"Mr. X\",\n            \"supplier_name\": \"Sen Sports\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"city\": \"Mumbai\",\n            \"product_code\": \"nb_bat\",\n            \"id\": 13,\n            \"product_category\": \"sports\",\n            \"measure_unit\": \"qty\",\n            \"total_cost\": 8990,\n            \"timestamp\": \"2021-03-06\",\n            \"zipcode\": 700067\n        },\n        {\n            \"quantity\": 10,\n            \"unit_price\": 899,\n            \"product_name\": \"NB cricket bat\",\n            \"contact_person\": \"Mr. X\",\n            \"supplier_name\": \"Sen Sports\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"city\": \"Mumbai\",\n            \"product_code\": \"nb_bat\",\n            \"id\": 14,\n            \"product_category\": \"sports\",\n            \"measure_unit\": \"qty\",\n            \"total_cost\": 8990,\n            \"timestamp\": \"2021-03-07\",\n            \"zipcode\": 700067\n        },\n        {\n            \"quantity\": 10,\n            \"unit_price\": 899,\n            \"product_name\": \"NB cricket bat\",\n            \"contact_person\": \"Mr. X\",\n            \"supplier_name\": \"Sen Sports\",\n            \"email\": \"mr.x@email.com\",\n            \"phone\": \"99999-99999\",\n            \"city\": \"Mumbai\",\n            \"product_code\": \"nb_bat\",\n            \"id\": 15,\n            \"product_category\": \"sports\",\n            \"measure_unit\": \"qty\",\n            \"total_cost\": 8990,\n            \"timestamp\": \"2021-03-08\",\n            \"zipcode\": 700067\n        }\n    ]\n}"
 						}
 					]
 				},
 				{
-					"name": "Update a storage item",
+					"name": "Insert a transaction",
 					"request": {
-						"method": "PUT",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"quantity\": 2\n}",
+							"raw": "{\n    \"timestamp\": \"2021-03-09\",\n    \"supplier_name\": \"Ash_Watches\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": 347274,\n    \"contact_person\": \"Mr. Y\",\n    \"phone\": \"99999-99998\",\n    \"email\": \"mr.y@email.com\",\n    \"product_code\": \"foss_ch_men\",\n    \"product_name\": \"Fossil Chronograph Mens Watch\",\n    \"product_category\": \"watches\",\n    \"unit_price\": 4199,\n    \"quantity\": 5,\n    \"total_cost\": 20995,\n    \"measure_unit\": \"qty\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1341,27 +1715,24 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/storage/<product_code>/<warehouse_name>/update",
+							"raw": "{{url}}/supplytransactions",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"storage",
-								"<product_code>",
-								"<warehouse_name>",
-								"update"
+								"supplytransactions"
 							]
 						}
 					},
 					"response": [
 						{
-							"name": "Update a storage item",
+							"name": "Insert a transaction",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"quantity\": 2\n}",
+									"raw": "{\n    \"timestamp\": \"2021-03-09\",\n    \"supplier_name\": \"Ash_Watches\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": 347274,\n    \"contact_person\": \"Mr. Y\",\n    \"phone\": \"99999-99998\",\n    \"email\": \"mr.y@email.com\",\n    \"product_code\": \"foss_ch_men\",\n    \"product_name\": \"Fossil Chronograph Mens Watch\",\n    \"product_category\": \"watches\",\n    \"unit_price\": 4199,\n    \"quantity\": 5,\n    \"total_cost\": 20995,\n    \"measure_unit\": \"qty\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1369,15 +1740,95 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/storage/nb_bat/WS1/update",
+									"raw": "{{url}}/supplytransactions",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"storage",
-										"nb_bat",
-										"WS1",
-										"update"
+										"supplytransactions"
+									]
+								}
+							},
+							"status": "CREATED",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "440"
+								},
+								{
+									"key": "Server",
+									"value": "Werkzeug/2.0.1 Python/3.7.5"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 13 Jun 2021 23:49:06 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"product_name\": \"Fossil Chronograph Mens Watch\",\n    \"measure_unit\": \"qty\",\n    \"contact_person\": \"Mr. Y\",\n    \"email\": \"mr.y@email.com\",\n    \"phone\": \"99999-99998\",\n    \"product_code\": \"foss_ch_men\",\n    \"city\": \"Mumbai\",\n    \"id\": 7,\n    \"zipcode\": 347274,\n    \"supplier_name\": \"Ash_Watches\",\n    \"total_cost\": 20995,\n    \"product_category\": \"watches\",\n    \"quantity\": 5,\n    \"unit_price\": 4199,\n    \"timestamp\": \"2021-03-09\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Customer transaction",
+			"item": [
+				{
+					"name": "Get all transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/customertransactions",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customertransactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View all transactions for a specific product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/customertransactions/product/<product_code>",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customertransactions",
+								"product",
+								"<product_code>"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "View all transactions for a specific product",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customertransactions/product/nb_bat",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customertransactions",
+										"product",
+										"nb_bat"
 									]
 								}
 							},
@@ -1391,7 +1842,7 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "94"
+									"value": "1276"
 								},
 								{
 									"key": "Server",
@@ -1399,22 +1850,146 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 12 Jun 2021 14:31:42 GMT"
+									"value": "Sat, 19 Jun 2021 13:08:57 GMT"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"quantity\": 9,\n    \"product_code\": \"nb_bat\",\n    \"warehouse_name\": \"WS1\",\n    \"id\": 1\n}"
+							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 2,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"total_cost\": 4396,\n            \"quantity\": 4,\n            \"unit_price\": 1099,\n            \"id\": 1,\n            \"measure_unit\": \"qty\",\n            \"zipcode\": 46211,\n            \"phone\": \"9180739405\",\n            \"contact_person\": \"Macy Merritt\",\n            \"timestamp\": \"2021-03-14\",\n            \"customer_name\": \"Ligula Nullam Feugiat LLP\",\n            \"product_category\": \"sports\",\n            \"product_code\": \"nb_bat\",\n            \"product_name\": \"NB cricket bat\",\n            \"email\": \"ornare.ligula@elitpretiumet.net\",\n            \"city\": \"Mumbai\"\n        },\n        {\n            \"total_cost\": 5495,\n            \"quantity\": 5,\n            \"unit_price\": 1099,\n            \"id\": 3,\n            \"measure_unit\": \"qty\",\n            \"zipcode\": 45336,\n            \"phone\": \"9598843913\",\n            \"contact_person\": \"Kirk Schwartz\",\n            \"timestamp\": \"2021-03-17\",\n            \"customer_name\": \"Mattis Velit Ltd\",\n            \"product_category\": \"sports\",\n            \"product_code\": \"nb_bat\",\n            \"product_name\": \"NB cricket bat\",\n            \"email\": \"consectetuer@Quisque.net\",\n            \"city\": \"Pune\"\n        }\n    ]\n}"
 						}
 					]
 				},
 				{
-					"name": "Insert a storage item",
+					"name": "View all transactions for a specific customer",
 					"request": {
-						"method": "PUT",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/customertransactions/customer/<customer_name>",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customertransactions",
+								"customer",
+								"<customer_name>"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "View all transactions for a specific customer",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customertransactions/customer/Ligula%20Nullam%20Feugiat%20LLP",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customertransactions",
+										"customer",
+										"Ligula%20Nullam%20Feugiat%20LLP"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "702"
+								},
+								{
+									"key": "Server",
+									"value": "Werkzeug/2.0.1 Python/3.7.5"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jun 2021 13:11:22 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 1,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"total_cost\": 4396,\n            \"quantity\": 4,\n            \"unit_price\": 1099,\n            \"id\": 1,\n            \"measure_unit\": \"qty\",\n            \"zipcode\": 46211,\n            \"phone\": \"9180739405\",\n            \"contact_person\": \"Macy Merritt\",\n            \"timestamp\": \"2021-03-14\",\n            \"customer_name\": \"Ligula Nullam Feugiat LLP\",\n            \"product_category\": \"sports\",\n            \"product_code\": \"nb_bat\",\n            \"product_name\": \"NB cricket bat\",\n            \"email\": \"ornare.ligula@elitpretiumet.net\",\n            \"city\": \"Mumbai\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "View all transaction for a specific product and a specific custmer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/customertransactions/product_customer/<product_code>/<customer_name>",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"customertransactions",
+								"product_customer",
+								"<product_code>",
+								"<customer_name>"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "View all transaction for a specific product and a specific custmer",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/customertransactions/product_customer/nb_bat/Ligula%20Nullam%20Feugiat%20LLP",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"customertransactions",
+										"product_customer",
+										"nb_bat",
+										"Ligula%20Nullam%20Feugiat%20LLP"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "702"
+								},
+								{
+									"key": "Server",
+									"value": "Werkzeug/2.0.1 Python/3.7.5"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jun 2021 13:20:33 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"start\": 1,\n    \"limit\": 10,\n    \"count\": 1,\n    \"previous\": \"\",\n    \"next\": \"\",\n    \"results\": [\n        {\n            \"product_category\": \"sports\",\n            \"email\": \"ornare.ligula@elitpretiumet.net\",\n            \"total_cost\": 4396,\n            \"quantity\": 4,\n            \"city\": \"Mumbai\",\n            \"unit_price\": 1099,\n            \"measure_unit\": \"qty\",\n            \"contact_person\": \"Macy Merritt\",\n            \"timestamp\": \"2021-03-14\",\n            \"zipcode\": 46211,\n            \"customer_name\": \"Ligula Nullam Feugiat LLP\",\n            \"product_name\": \"NB cricket bat\",\n            \"phone\": \"9180739405\",\n            \"id\": 1,\n            \"product_code\": \"nb_bat\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Insert a transaction",
+					"request": {
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"quantity\": 5\n}",
+							"raw": "{\n    \"timestamp\": \"2021-03-18\",\n    \"customer_name\": \"Lorem Ipsum Sodales Corporation\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": \"43761\",\n    \"contact_person\": \"Sage Gonzalez\",\n    \"phone\": \"9278695929\",\n    \"email\": \"at.augue.id@felisrviverra.ca\",\n    \"product_code\": \"foss_ch_men\",\n    \"product_name\": \"Fossil Chronograph Mens Watch\",\n    \"product_category\": \"watches\",\n    \"unit_price\": 4599,\n    \"quantity\": 2,\n    \"total_cost\": 9198,\n    \"measure_unit\": \"qty\"\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1422,27 +1997,24 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/storage/<product_code>/<warehouse_name>/insert",
+							"raw": "{{url}}/customertransactions",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"storage",
-								"<product_code>",
-								"<warehouse_name>",
-								"insert"
+								"customertransactions"
 							]
 						}
 					},
 					"response": [
 						{
-							"name": "Update a storage item",
+							"name": "Insert a transaction",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"quantity\": 5\n}",
+									"raw": "{\n    \"timestamp\": \"2021-03-18\",\n    \"customer_name\": \"Lorem Ipsum Sodales Corporation\",\n    \"city\": \"Mumbai\",\n    \"zipcode\": \"43761\",\n    \"contact_person\": \"Sage Gonzalez\",\n    \"phone\": \"9278695929\",\n    \"email\": \"at.augue.id@felisrviverra.ca\",\n    \"product_code\": \"foss_ch_men\",\n    \"product_name\": \"Fossil Chronograph Mens Watch\",\n    \"product_category\": \"watches\",\n    \"unit_price\": 4599,\n    \"quantity\": 2,\n    \"total_cost\": 9198,\n    \"measure_unit\": \"qty\"\n    }",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1450,20 +2022,17 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/storage/nb_bat/WS1/insert",
+									"raw": "{{url}}/customertransactions",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
-										"storage",
-										"nb_bat",
-										"WS1",
-										"insert"
+										"customertransactions"
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
+							"status": "CREATED",
+							"code": 201,
 							"_postman_previewlanguage": "json",
 							"header": [
 								{
@@ -1472,7 +2041,7 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "94"
+									"value": "479"
 								},
 								{
 									"key": "Server",
@@ -1480,11 +2049,11 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 12 Jun 2021 14:29:23 GMT"
+									"value": "Sat, 19 Jun 2021 13:22:51 GMT"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"quantity\": 5,\n    \"product_code\": \"nb_bat\",\n    \"warehouse_name\": \"WS1\",\n    \"id\": 1\n}"
+							"body": "{\n    \"product_category\": \"watches\",\n    \"email\": \"at.augue.id@felisrviverra.ca\",\n    \"total_cost\": 9198,\n    \"quantity\": 2,\n    \"city\": \"Mumbai\",\n    \"unit_price\": 4599,\n    \"measure_unit\": \"qty\",\n    \"contact_person\": \"Sage Gonzalez\",\n    \"timestamp\": \"2021-03-18\",\n    \"zipcode\": 43761,\n    \"customer_name\": \"Lorem Ipsum Sodales Corporation\",\n    \"product_name\": \"Fossil Chronograph Mens Watch\",\n    \"phone\": \"9278695929\",\n    \"id\": 4,\n    \"product_code\": \"foss_ch_men\"\n}"
 						}
 					]
 				}

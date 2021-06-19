@@ -32,7 +32,7 @@ def handle_marshmallow_validation(err):
 api.add_resource(TransactionList, "/supplytransactions")
 api.add_resource(TransactionListByProduct, "/supplytransactions/product/<string:product_code>")
 api.add_resource(TransactionListBySupplier, "/supplytransactions/supplier/<string:supplier_name>")
-api.add_resource(TransactionListByProductAndSupplier, "/supplytransactions/<string:product_code>/<string:supplier_name>")
+api.add_resource(TransactionListByProductAndSupplier, "/supplytransactions/product_suplier/<string:product_code>/<string:supplier_name>")
 
 
 if __name__ == "__main__":

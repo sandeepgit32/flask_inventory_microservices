@@ -61,7 +61,7 @@ class TransactionListByCustomer(Resource):
 
 
 class TransactionListByProductAndCustomer(Resource):
-    # GET /customertransactions/<string:product_code>/<string:customer_name>
+    # GET /customertransactions/product_customer/<string:product_code>/<string:customer_name>
     @classmethod
     def get(cls, product_code: str, customer_name: str):
         print(product_code, customer_name)

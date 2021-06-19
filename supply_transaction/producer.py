@@ -1,10 +1,6 @@
 import pika
 import json
 
-# MESSAGE_BODY = json.dumps({
-#     "a": "ui",
-#     "b": "soe"
-# })
 
 def send_message(MESSAGE_BODY):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))

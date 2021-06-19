@@ -1,4 +1,4 @@
-from app import ma
+from ma import ma
 from models.transaction import TransactionModel
 
 
