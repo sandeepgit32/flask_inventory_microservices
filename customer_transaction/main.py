@@ -9,6 +9,8 @@ app = create_app(os.environ.get("FLASK_ENV"))
 
 api = Api(app)
 
+print(os.environ.get("FLASK_ENV"))
+
 # customer transaction endpoints
 api.add_resource(TransactionList, "/customertransactions")
 api.add_resource(TransactionListByProduct, "/customertransactions/product/<string:product_code>")
@@ -22,4 +24,5 @@ def handle_marshmallow_validation(err):
 
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    # The host='0.0.0.0' must be mentioned, otherwise docker networking wont work.
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,0 +1,33 @@
+version: "3"
+
+volumes:
+  customertransaction-db-vol:
+
+services:
+  api:
+    container_name: customertransaction_api
+    build:
+      context: .
+    volumes:
+      - .:/app
+    ports:
+      - 5002:5000
+    env_file: 
+      - .env
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    container_name: customertransaction_db_host
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 32002:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: customertransaction_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - customertransaction-db-vol:/var/lib/mysql

@@ -46,5 +46,5 @@ def handle_marshmallow_validation(err):
 
 
 if __name__ == "__main__":
-    # print(app.config)
-    app.run(port=5001, debug=True)
+    # The host='0.0.0.0' must be mentioned, otherwise docker networking wont work.
+    app.run(host='0.0.0.0', port=5000, debug=True)
