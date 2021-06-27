@@ -9,8 +9,6 @@ app = create_app(os.environ.get("FLASK_ENV"))
 
 api = Api(app)
 
-print(os.environ.get("FLASK_ENV"))
-
 # customer transaction endpoints
 api.add_resource(TransactionList, "/customertransactions")
 api.add_resource(TransactionListByProduct, "/customertransactions/product/<string:product_code>")

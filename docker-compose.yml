@@ -1,0 +1,24 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - inventory-network
+
+  reverseproxy:
+    container_name: reverseproxy
+    build:
+      context: .
+    ports:
+      - 8080:80
+    restart: always
+    networks:
+      - inventory-network
+
+networks:
+  inventory-network:
+    external: true

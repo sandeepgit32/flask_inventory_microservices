@@ -3,6 +3,10 @@ version: "3"
 volumes:
   inventory-db-vol:
 
+networks:
+  inventory-network:
+    external: true
+
 services:
   api:
     container_name: inventory_api
@@ -17,6 +21,8 @@ services:
     depends_on:
       - db
     restart: always
+    networks:
+      - inventory-network
 
   db:
     container_name: inventory_db_host
@@ -31,3 +37,5 @@ services:
       MYSQL_PASSWORD: 123456
     volumes:
       - inventory-db-vol:/var/lib/mysql
+    networks:
+      - inventory-network
