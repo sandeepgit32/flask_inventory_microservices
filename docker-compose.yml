@@ -47,6 +47,25 @@ services:
     networks:
       - inventory-network
 
+  api_gateway:
+    container_name: api_gateway
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      - INVENTORY_SERVICE_URL=http://inventory_api:5000
+      - SUPPLY_TRANSACTION_SERVICE_URL=http://supplytransaction_api:5000
+      - CUSTOMER_TRANSACTION_SERVICE_URL=http://customertransaction_api:5000
+    depends_on:
+      - inventory_api
+      - supplytransaction_api
+      - customertransaction_api
+    restart: always
+    networks:
+      - inventory-network
+
   # ===========================================
   # Inventory Service
   # ===========================================
