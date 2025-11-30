@@ -1,24 +1,180 @@
-version: "3"
+version: "3.8"
+
+volumes:
+  inventory-db-vol:
+  supplytransaction-db-vol:
+  customertransaction-db-vol:
+  redis-data:
+
+networks:
+  inventory-network:
+    driver: bridge
+
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
+  # ===========================================
+  # Infrastructure Services
+  # ===========================================
+  
+  redis_queue:
+    container_name: redis_queue
+    build:
+      context: ./message_queue
+      dockerfile: Dockerfile
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 6379:6379
+    volumes:
+      - redis-data:/data
     networks:
       - inventory-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   reverseproxy:
     container_name: reverseproxy
     build:
       context: .
+      dockerfile: Dockerfile
     ports:
       - 8080:80
+    restart: always
+    depends_on:
+      - inventory_api
+      - supplytransaction_api
+      - customertransaction_api
+    networks:
+      - inventory-network
+
+  # ===========================================
+  # Inventory Service
+  # ===========================================
+  
+  inventory_api:
+    container_name: inventory_api
+    build:
+      context: ./inventory
+      dockerfile: Dockerfile
+    volumes:
+      - ./inventory:/app
+      - ./message_queue:/app/message_queue
+    ports:
+      - 5000:5000
+    env_file:
+      - ./inventory/.env
+      - ./message_queue/.env
+    depends_on:
+      - inventory_db
+      - redis_queue
     restart: always
     networks:
       - inventory-network
 
-networks:
-  inventory-network:
-    external: true
+  inventory_db:
+    container_name: inventory_db_host
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 32000:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: inventory_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - inventory-db-vol:/var/lib/mysql
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================
+  # Supply Transaction Service
+  # ===========================================
+  
+  supplytransaction_api:
+    container_name: supplytransaction_api
+    build:
+      context: ./supply_transaction
+      dockerfile: Dockerfile
+    volumes:
+      - ./supply_transaction:/app
+      - ./message_queue:/app/message_queue
+    ports:
+      - 5001:5000
+    env_file:
+      - ./supply_transaction/.env
+      - ./message_queue/.env
+    depends_on:
+      - supplytransaction_db
+      - redis_queue
+    restart: always
+    networks:
+      - inventory-network
+
+  supplytransaction_db:
+    container_name: supplytransaction_db_host
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 32001:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: supplytransaction_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - supplytransaction-db-vol:/var/lib/mysql
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================
+  # Customer Transaction Service
+  # ===========================================
+  
+  customertransaction_api:
+    container_name: customertransaction_api
+    build:
+      context: ./customer_transaction
+      dockerfile: Dockerfile
+    volumes:
+      - ./customer_transaction:/app
+    ports:
+      - 5002:5000
+    env_file:
+      - ./customer_transaction/.env
+    depends_on:
+      - customertransaction_db
+    restart: always
+    networks:
+      - inventory-network
+
+  customertransaction_db:
+    container_name: customertransaction_db_host
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 32002:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: customertransaction_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - customertransaction-db-vol:/var/lib/mysql
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

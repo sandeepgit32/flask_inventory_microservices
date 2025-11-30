@@ -1,19 +1,14 @@
-import pika
-import json
+"""
+Redis Message Queue Producer
 
+Publishes messages to Redis queue for inventory updates.
+"""
+import os
+import sys
 
-def send_message(MESSAGE_BODY):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-    channel = connection.channel()
+# Add message_queue to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'message_queue'))
 
-    channel.queue_declare(queue='hello')
+from message_queue.producer import send_message
 
-    channel.basic_publish(
-        exchange = '', 
-        routing_key = 'hello', 
-        body = json.dumps(MESSAGE_BODY),
-        properties = pika.BasicProperties(
-            delivery_mode = 2,  # make message persistent
-        ))
-    print(f" [x] Sent {MESSAGE_BODY}")
-    connection.close()
+__all__ = ['send_message']
