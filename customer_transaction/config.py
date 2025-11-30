@@ -13,10 +13,10 @@ MYSQL_PORT = os.environ.get("MYSQL_PORT", "3306")
 MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "customertransaction_db")
 
 
-def get_database_uri(env_suffix):
-    """Generate database URI with environment-specific database name."""
-    db_name = f"{MYSQL_DATABASE}{env_suffix}"
-    return f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{db_name}"
+def get_database_uri(db_name=None):
+    """Generate database URI with optional database name override."""
+    database = db_name if db_name else MYSQL_DATABASE
+    return f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{database}"
 
 
 class Config:
@@ -41,18 +41,18 @@ class DevConfig(Config):
     FLASK_ENV = "dev"
     DEBUG = True
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = get_database_uri("_dev")
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
 
 
 class TestConfig(Config):
     FLASK_ENV = "test"
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = get_database_uri("_test")
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
 
 
 class ProdConfig(Config):
     FLASK_ENV = "prod"
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = get_database_uri("_prod")
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
