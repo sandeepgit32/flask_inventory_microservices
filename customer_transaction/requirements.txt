@@ -17,6 +17,7 @@ marshmallow==3.12.1
 marshmallow-sqlalchemy==0.26.0
 mccabe==0.6.1
 mysql-connector-python==8.0.25
+pymysql
 protobuf==3.17.2
 pycodestyle==2.7.0
 pyflakes==2.3.1

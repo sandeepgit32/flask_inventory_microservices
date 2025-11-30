@@ -10,7 +10,7 @@ MYSQL_USER = os.environ.get("MYSQL_USER", "admin")
 MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "123456")
 MYSQL_HOST = os.environ.get("MYSQL_HOST", "localhost")
 MYSQL_PORT = os.environ.get("MYSQL_PORT", "3306")
-MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "customertransaction_db")
+MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "catalog_db")
 
 
 def get_database_uri(env_suffix):
@@ -40,7 +40,7 @@ class Config:
 class DevConfig(Config):
     FLASK_ENV = "dev"
     DEBUG = True
-    TESTING = False
+    TESTING = True
     SQLALCHEMY_DATABASE_URI = get_database_uri("_dev")
 
 

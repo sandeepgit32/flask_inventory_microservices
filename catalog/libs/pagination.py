@@ -5,7 +5,7 @@ DEFAULT_PAGINATION_NUM_ELEMENTS = os.environ.get('DEFAULT_PAGINATION_NUM_ELEMENT
 
 def get_paginated_list(results, url, start, limit):
     start = int(start)
-    limit = int(limit) if limit != None else int(DEFAULT_PAGINATION_NUM_ELEMENTS)
+    limit = int(limit) if limit is not None else int(DEFAULT_PAGINATION_NUM_ELEMENTS)
     count = len(results)
     if count == 0:
         return {
@@ -20,7 +20,7 @@ def get_paginated_list(results, url, start, limit):
     obj['limit'] = limit
     obj['count'] = count
     # make URLs without query string
-    url = request_url_without_query_string = url.split('?')[0]
+    url = url.split('?')[0]
     # make previous url
     if start == 1:
         obj['previous'] = ''

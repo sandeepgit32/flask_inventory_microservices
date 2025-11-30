@@ -3,12 +3,14 @@ from flask import Flask
 from db import db
 from ma import ma
 
-def create_app(config_name='development'):
+def create_app(config_name='dev'):
     app = Flask(__name__)
 
-    if config_name == 'development':
+    if config_name == 'dev':
         app.config.from_object('config.DevConfig')
-    elif config_name == 'production':
+    elif config_name == 'test':
+        app.config.from_object('config.TestConfig')
+    elif config_name == 'prod':
         app.config.from_object('config.ProdConfig')
 
     db.init_app(app)

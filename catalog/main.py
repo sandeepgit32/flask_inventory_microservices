@@ -23,7 +23,7 @@ api.add_resource(Supplier, "/supplier/<int:id>")
 api.add_resource(SupplierListByCity, "/suppliers/<string:city>")
 api.add_resource(ProductListBySupplier, "/supplier/<int:id>/products")
 api.add_resource(SupplierList, "/suppliers")
-# suppplier endpoints
+# customer endpoints
 api.add_resource(Customer, "/customer/<int:id>")
 api.add_resource(CustomerList, "/customers")
 api.add_resource(CustomerListByCity, "/customers/<string:city>")

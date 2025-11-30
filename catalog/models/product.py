@@ -31,7 +31,7 @@ class ProductModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def filter_by_category(cls) -> List["SupplierModel"]:
+    def filter_by_category(cls, category: str) -> List["ProductModel"]:
         return cls.query.filter_by(category=category)
 
     def save_to_db(self) -> None:

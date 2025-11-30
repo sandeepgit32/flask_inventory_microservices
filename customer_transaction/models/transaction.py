@@ -32,7 +32,7 @@ class TransactionModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def filter_by_supplier(cls, customer_name: str) -> List["TransactionModel"]:
+    def filter_by_customer(cls, customer_name: str) -> List["TransactionModel"]:
         return cls.query.filter_by(customer_name=customer_name)
 
     @classmethod
@@ -40,7 +40,7 @@ class TransactionModel(db.Model):
         return cls.query.filter_by(product_code=product_code)
 
     @classmethod
-    def filter_by_product_and_supplier(cls, product_code: str, customer_name: str) -> List["TransactionModel"]:
+    def filter_by_product_and_customer(cls, product_code: str, customer_name: str) -> List["TransactionModel"]:
         return cls.query.filter(and_(cls.customer_name==customer_name, cls.product_code==product_code)).all()
 
     

@@ -1,7 +1,7 @@
 version: "3.8"
 
 volumes:
-  inventory-db-vol:
+  catalog-db-vol:
   supplytransaction-db-vol:
   customertransaction-db-vol:
   redis-data:
@@ -41,7 +41,7 @@ services:
       - 8080:80
     restart: always
     depends_on:
-      - inventory_api
+      - catalog_api
       - supplytransaction_api
       - customertransaction_api
     networks:
@@ -55,11 +55,11 @@ services:
     ports:
       - 8000:8000
     environment:
-      - INVENTORY_SERVICE_URL=http://inventory_api:5000
+      - CATALOG_SERVICE_URL=http://catalog_api:5000
       - SUPPLY_TRANSACTION_SERVICE_URL=http://supplytransaction_api:5000
       - CUSTOMER_TRANSACTION_SERVICE_URL=http://customertransaction_api:5000
     depends_on:
-      - inventory_api
+      - catalog_api
       - supplytransaction_api
       - customertransaction_api
     restart: always
@@ -67,42 +67,39 @@ services:
       - inventory-network
 
   # ===========================================
-  # Inventory Service
+  # Catalog Service
   # ===========================================
   
-  inventory_api:
-    container_name: inventory_api
+  catalog_api:
+    container_name: catalog_api
     build:
-      context: ./inventory
+      context: ./catalog
       dockerfile: Dockerfile
     volumes:
-      - ./inventory:/app
+      - ./catalog:/app
       - ./message_queue:/app/message_queue
     ports:
       - 5000:5000
     env_file:
-      - ./inventory/.env
+      - ./catalog/.env
       - ./message_queue/.env
     depends_on:
-      - inventory_db
+      - catalog_db
       - redis_queue
     restart: always
     networks:
       - inventory-network
 
-  inventory_db:
-    container_name: inventory_db_host
+  catalog_db:
+    container_name: catalog_db_host
     image: mysql:5.7
     restart: always
     ports:
       - 32000:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: inventory_db
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: 123456
+    env_file:
+      - ./catalog/.env
     volumes:
-      - inventory-db-vol:/var/lib/mysql
+      - catalog-db-vol:/var/lib/mysql
     networks:
       - inventory-network
     healthcheck:
@@ -141,11 +138,8 @@ services:
     restart: always
     ports:
       - 32001:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: supplytransaction_db
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: 123456
+    env_file:
+      - ./supply_transaction/.env
     volumes:
       - supplytransaction-db-vol:/var/lib/mysql
     networks:
@@ -183,11 +177,8 @@ services:
     restart: always
     ports:
       - 32002:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: customertransaction_db
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: 123456
+    env_file:
+      - ./customer_transaction/.env
     volumes:
       - customertransaction-db-vol:/var/lib/mysql
     networks:

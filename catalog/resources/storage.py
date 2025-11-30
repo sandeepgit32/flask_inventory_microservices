@@ -40,8 +40,8 @@ class StorageInsert(Resource):
             else:
                 return {"message": gettext("storage_cannot_be_updated")}, 404
         else:
-            storage_json["product_code"]: product_code
-            storage_json["warehouse_name"]: warehouse_name
+            storage_json["product_code"] = product_code
+            storage_json["warehouse_name"] = warehouse_name
             storage = storage_schema.load(storage_json)
         
         storage.save_to_db()

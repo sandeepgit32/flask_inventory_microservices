@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 from typing import Optional
 from config import (
-    INVENTORY_SERVICE_URL,
+    CATALOG_SERVICE_URL,
     SUPPLY_TRANSACTION_SERVICE_URL,
     CUSTOMER_TRANSACTION_SERVICE_URL
 )
@@ -58,135 +58,135 @@ async def health_check():
 # ==================== Product Endpoints ====================
 @app.get("/api/products")
 async def get_products(request: Request, start: Optional[int] = 1, limit: Optional[int] = None):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/products", request, {"start": start, "limit": limit})
+    return await proxy_request(CATALOG_SERVICE_URL, "/products", request, {"start": start, "limit": limit})
 
 @app.post("/api/products")
 async def create_product(request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/products", request)
+    return await proxy_request(CATALOG_SERVICE_URL, "/products", request)
 
 @app.get("/api/product/{product_code}")
 async def get_product(product_code: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/product/{product_code}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/product/{product_code}", request)
 
 @app.put("/api/product/{product_code}")
 async def update_product(product_code: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/product/{product_code}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/product/{product_code}", request)
 
 @app.delete("/api/product/{product_code}")
 async def delete_product(product_code: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/product/{product_code}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/product/{product_code}", request)
 
 
 # ==================== Supplier Endpoints ====================
 @app.get("/api/suppliers")
 async def get_suppliers(request: Request, start: Optional[int] = 1, limit: Optional[int] = None):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/suppliers", request, {"start": start, "limit": limit})
+    return await proxy_request(CATALOG_SERVICE_URL, "/suppliers", request, {"start": start, "limit": limit})
 
 @app.post("/api/suppliers")
 async def create_supplier(request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/suppliers", request)
+    return await proxy_request(CATALOG_SERVICE_URL, "/suppliers", request)
 
 @app.get("/api/supplier/{id}")
 async def get_supplier(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/supplier/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/supplier/{id}", request)
 
 @app.put("/api/supplier/{id}")
 async def update_supplier(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/supplier/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/supplier/{id}", request)
 
 @app.delete("/api/supplier/{id}")
 async def delete_supplier(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/supplier/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/supplier/{id}", request)
 
 @app.get("/api/suppliers/{city}")
 async def get_suppliers_by_city(city: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/suppliers/{city}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/suppliers/{city}", request)
 
 @app.get("/api/supplier/{id}/products")
 async def get_supplier_products(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/supplier/{id}/products", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/supplier/{id}/products", request)
 
 
 # ==================== Customer Endpoints ====================
 @app.get("/api/customers")
 async def get_customers(request: Request, start: Optional[int] = 1, limit: Optional[int] = None):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/customers", request, {"start": start, "limit": limit})
+    return await proxy_request(CATALOG_SERVICE_URL, "/customers", request, {"start": start, "limit": limit})
 
 @app.post("/api/customers")
 async def create_customer(request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/customers", request)
+    return await proxy_request(CATALOG_SERVICE_URL, "/customers", request)
 
 @app.get("/api/customer/{id}")
 async def get_customer(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/customer/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/customer/{id}", request)
 
 @app.put("/api/customer/{id}")
 async def update_customer(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/customer/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/customer/{id}", request)
 
 @app.delete("/api/customer/{id}")
 async def delete_customer(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/customer/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/customer/{id}", request)
 
 @app.get("/api/customers/{city}")
 async def get_customers_by_city(city: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/customers/{city}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/customers/{city}", request)
 
 
 # ==================== Warehouse Endpoints ====================
 @app.get("/api/warehouses")
 async def get_warehouses(request: Request, start: Optional[int] = 1, limit: Optional[int] = None):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/warehouses", request, {"start": start, "limit": limit})
+    return await proxy_request(CATALOG_SERVICE_URL, "/warehouses", request, {"start": start, "limit": limit})
 
 @app.post("/api/warehouses")
 async def create_warehouse(request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/warehouses", request)
+    return await proxy_request(CATALOG_SERVICE_URL, "/warehouses", request)
 
 @app.get("/api/warehouse/{id}")
 async def get_warehouse(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/warehouse/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/warehouse/{id}", request)
 
 @app.put("/api/warehouse/{id}")
 async def update_warehouse(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/warehouse/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/warehouse/{id}", request)
 
 @app.delete("/api/warehouse/{id}")
 async def delete_warehouse(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/warehouse/{id}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/warehouse/{id}", request)
 
 @app.get("/api/warehouses/{city}")
 async def get_warehouses_by_city(city: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/warehouses/{city}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/warehouses/{city}", request)
 
 @app.get("/api/warehouse/{id}/customers")
 async def get_warehouse_customers(id: int, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/warehouse/{id}/customers", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/warehouse/{id}/customers", request)
 
 
 # ==================== Storage Endpoints ====================
 @app.get("/api/storages")
 async def get_storages(request: Request, start: Optional[int] = 1, limit: Optional[int] = None):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/storages", request, {"start": start, "limit": limit})
+    return await proxy_request(CATALOG_SERVICE_URL, "/storages", request, {"start": start, "limit": limit})
 
 @app.post("/api/storages")
 async def create_storage(request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/storages", request)
+    return await proxy_request(CATALOG_SERVICE_URL, "/storages", request)
 
 @app.get("/api/storage/{product_code}/{warehouse_name}")
 async def get_storage(product_code: str, warehouse_name: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/storage/{product_code}/{warehouse_name}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/storage/{product_code}/{warehouse_name}", request)
 
 @app.put("/api/storage/{product_code}/{warehouse_name}/{type}")
 async def update_storage(product_code: str, warehouse_name: str, type: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/storage/{product_code}/{warehouse_name}/{type}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/storage/{product_code}/{warehouse_name}/{type}", request)
 
 @app.get("/api/storages/product/{product_code}")
 async def get_storages_by_product(product_code: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/storages/product/{product_code}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/storages/product/{product_code}", request)
 
 @app.get("/api/storages/warehouse/{warehouse_name}")
 async def get_storages_by_warehouse(warehouse_name: str, request: Request):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/storages/warehouse/{warehouse_name}", request)
+    return await proxy_request(CATALOG_SERVICE_URL, f"/storages/warehouse/{warehouse_name}", request)
 
 
 # ==================== Supply Transaction Endpoints ====================

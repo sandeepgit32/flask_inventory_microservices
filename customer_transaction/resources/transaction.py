@@ -53,7 +53,7 @@ class TransactionListByCustomer(Resource):
     @classmethod
     def get(cls, customer_name: str):
         return get_paginated_list(
-            transaction_list_schema.dump(TransactionModel.filter_by_supplier(customer_name)),
+            transaction_list_schema.dump(TransactionModel.filter_by_customer(customer_name)),
             request.url,
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -65,7 +65,7 @@ class TransactionListByProductAndCustomer(Resource):
     @classmethod
     def get(cls, product_code: str, customer_name: str):
         print(product_code, customer_name)
-        transaction = TransactionModel.filter_by_product_and_supplier(product_code, customer_name)
+        transaction = TransactionModel.filter_by_product_and_customer(product_code, customer_name)
         if transaction:
             return get_paginated_list(
                 transaction_list_schema.dump(transaction),
