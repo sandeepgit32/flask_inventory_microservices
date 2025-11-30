@@ -168,7 +168,7 @@ const fetchCustomers = async () => {
   try {
     loading.value = true
     const response = await customerService.getAll()
-    customers.value = response.data.customers || response.data || []
+    customers.value = response.data.results || response.data || []
   } catch (error) {
     showToast('Failed to load customers', 'error')
   } finally {

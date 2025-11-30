@@ -173,7 +173,7 @@ const fetchProducts = async () => {
   try {
     loading.value = true
     const response = await productService.getAll()
-    products.value = response.data.products || response.data || []
+    products.value = response.data.results || response.data || []
   } catch (error) {
     showToast('Failed to load products', 'error')
   } finally {

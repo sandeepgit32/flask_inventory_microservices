@@ -159,7 +159,7 @@ const fetchStorages = async () => {
   try {
     loading.value = true
     const response = await storageService.getAll()
-    storages.value = response.data.storages || response.data || []
+    storages.value = response.data.results || response.data || []
   } catch (error) {
     showToast('Failed to load storage records', 'error')
   } finally {

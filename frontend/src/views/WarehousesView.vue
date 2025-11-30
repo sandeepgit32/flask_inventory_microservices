@@ -126,7 +126,7 @@ const fetchWarehouses = async () => {
   try {
     loading.value = true
     const response = await warehouseService.getAll()
-    warehouses.value = response.data.warehouses || response.data || []
+    warehouses.value = response.data.results || response.data || []
   } catch (error) {
     showToast('Failed to load warehouses', 'error')
   } finally {

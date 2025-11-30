@@ -197,7 +197,7 @@ const fetchTransactions = async () => {
   try {
     loading.value = true
     const response = await supplyTransactionService.getAll()
-    transactions.value = response.data.transactions || response.data || []
+    transactions.value = response.data.results || response.data || []
   } catch (error) {
     showToast('Failed to load transactions', 'error')
   } finally {
