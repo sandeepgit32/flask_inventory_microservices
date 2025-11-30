@@ -1,9 +1,7 @@
 version: "3.8"
 
 volumes:
-  catalog-db-vol:
-  supplytransaction-db-vol:
-  customertransaction-db-vol:
+  inventory-db-vol:
   redis-data:
 
 networks:
@@ -31,6 +29,27 @@ services:
   # ===========================================
   # Infrastructure Services
   # ===========================================
+
+  inventory_db:
+    container_name: inventory_db_host
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 32000:3306
+    env_file:
+      - ./database/.env
+    volumes:
+      - inventory-db-vol:/var/lib/mysql
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-proot", "-e", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
   
   redis_queue:
     container_name: redis_queue
@@ -86,29 +105,13 @@ services:
       - ./catalog/.env
       - ./message_queue/.env
     depends_on:
-      - catalog_db
-      - redis_queue
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
     restart: always
     networks:
       - inventory-network
-
-  catalog_db:
-    container_name: catalog_db_host
-    image: mysql:5.7
-    restart: always
-    ports:
-      - 32000:3306
-    env_file:
-      - ./catalog/.env
-    volumes:
-      - catalog-db-vol:/var/lib/mysql
-    networks:
-      - inventory-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # ===========================================
   # Supply Transaction Service
@@ -128,29 +131,13 @@ services:
       - ./supply_transaction/.env
       - ./message_queue/.env
     depends_on:
-      - supplytransaction_db
-      - redis_queue
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
     restart: always
     networks:
       - inventory-network
-
-  supplytransaction_db:
-    container_name: supplytransaction_db_host
-    image: mysql:5.7
-    restart: always
-    ports:
-      - 32001:3306
-    env_file:
-      - ./supply_transaction/.env
-    volumes:
-      - supplytransaction-db-vol:/var/lib/mysql
-    networks:
-      - inventory-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # ===========================================
   # Customer Transaction Service
@@ -168,25 +155,8 @@ services:
     env_file:
       - ./customer_transaction/.env
     depends_on:
-      - customertransaction_db
+      inventory_db:
+        condition: service_healthy
     restart: always
     networks:
       - inventory-network
-
-  customertransaction_db:
-    container_name: customertransaction_db_host
-    image: mysql:5.7
-    restart: always
-    ports:
-      - 32002:3306
-    env_file:
-      - ./customer_transaction/.env
-    volumes:
-      - customertransaction-db-vol:/var/lib/mysql
-    networks:
-      - inventory-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5

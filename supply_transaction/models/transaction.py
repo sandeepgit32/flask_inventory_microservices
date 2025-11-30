@@ -4,7 +4,7 @@ from sqlalchemy import and_
 
 
 class TransactionModel(db.Model):
-    __tablename__ = "transactions"
+    __tablename__ = "supply_transactions"
 
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.Date)

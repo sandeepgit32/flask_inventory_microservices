@@ -7,7 +7,7 @@ Used by the Inventory Service to process inventory updates.
 import json
 import time
 import redis
-from config import RedisConfig
+from .redis_config import RedisConfig
 
 
 class MessageConsumer:
