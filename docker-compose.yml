@@ -12,6 +12,23 @@ networks:
 
 services:
   # ===========================================
+  # Frontend Service
+  # ===========================================
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+    depends_on:
+      - api_gateway
+    restart: always
+    networks:
+      - inventory-network
+
+  # ===========================================
   # Infrastructure Services
   # ===========================================
   
@@ -31,21 +48,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  reverseproxy:
-    container_name: reverseproxy
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 8080:80
-    restart: always
-    depends_on:
-      - catalog_api
-      - supplytransaction_api
-      - customertransaction_api
-    networks:
-      - inventory-network
 
   api_gateway:
     container_name: api_gateway
