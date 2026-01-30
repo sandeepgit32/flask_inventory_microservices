@@ -1,10 +1,22 @@
-from ma import ma
-from models.warehouse import WarehouseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 
-class WarehouseSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = WarehouseModel
-        load_instance = True 
-        # load_only = ("store",)
-        # dump_only = ("id",)
+class WarehouseBase(BaseModel):
+    name: str
+    city: Optional[str] = None
+
+
+class WarehouseCreate(WarehouseBase):
+    pass
+
+
+class WarehouseUpdate(BaseModel):
+    name: Optional[str] = None
+    city: Optional[str] = None
+
+
+class WarehouseResponse(WarehouseBase):
+    id: int
+    
+    model_config = ConfigDict(from_attributes=True)

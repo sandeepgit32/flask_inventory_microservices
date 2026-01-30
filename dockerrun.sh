@@ -7,33 +7,33 @@ case "$1" in
     up)
         if [ "$2" = "--build" ]; then
             echo "Building and starting all services..."
-            docker-compose up --build -d
+            docker compose up --build -d
         else
             echo "Starting all services..."
-            docker-compose up -d
+            docker compose up -d
         fi
         ;;
     down)
         echo "Stopping all services..."
-        docker-compose down
+        docker compose down
         ;;
     restart)
         echo "Restarting all services..."
-        docker-compose restart
+        docker compose restart
         ;;
     logs)
         if [ -n "$2" ]; then
-            docker-compose logs -f "$2"
+            docker compose logs -f "$2"
         else
-            docker-compose logs -f
+            docker compose logs -f
         fi
         ;;
     status)
-        docker-compose ps
+        docker compose ps
         ;;
     clean)
         echo "Stopping services and removing volumes..."
-        docker-compose down -v
+        docker compose down -v
         ;;
     *)
         echo "Usage: $0 {up|down|restart|logs|status|clean} [options]"

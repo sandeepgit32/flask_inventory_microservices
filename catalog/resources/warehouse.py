@@ -1,14 +1,12 @@
 from flask_restful import Resource
 from flask import request
+from pydantic import ValidationError
 from models.warehouse import WarehouseModel
-from schemas.warehouse import WarehouseSchema
-from schemas.customer import CustomerSchema
+from schemas.warehouse import WarehouseCreate, WarehouseUpdate, WarehouseResponse
+from schemas.customer import CustomerResponse
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
-
-warehouse_schema = WarehouseSchema()
-warehouse_list_schema = WarehouseSchema(many=True)
-customer_list_schema = CustomerSchema(many=True)
+from libs.pydantic_helpers import serialize_model, serialize_models, validate_request_data
 
 
 class Warehouse(Resource):
@@ -17,7 +15,7 @@ class Warehouse(Resource):
     def get(cls, id: int):
         warehouse = WarehouseModel.find_by_id(id)
         if warehouse:
-            return warehouse_schema.dump(warehouse), 200
+            return serialize_model(warehouse, WarehouseResponse), 200
 
         return {"message": gettext("warehouse_not_found")}, 404
 
@@ -42,14 +40,18 @@ class Warehouse(Resource):
         warehouse = WarehouseModel.find_by_id(id)
 
         if warehouse:
-            # Dynamically setting attributes of the object 'warehouse' from 'warehouse_json' dict
-            for attribute in warehouse_json.keys():
-                setattr(warehouse, attribute, warehouse_json[attribute])
-            warehouse.save_to_db()
+            try:
+                validated_data = validate_request_data(warehouse_json, WarehouseUpdate)
+                # Dynamically setting attributes of the object 'warehouse' from validated data
+                for field, value in validated_data.model_dump(exclude_unset=True).items():
+                    setattr(warehouse, field, value)
+                warehouse.save_to_db()
+            except ValidationError as e:
+                return {"errors": e.errors()}, 400
         else:
             return {"message": gettext("warehouse_not_found")}, 404
 
-        return warehouse_schema.dump(warehouse), 200
+        return serialize_model(warehouse, WarehouseResponse), 200
 
 
 class WarehouseList(Resource):
@@ -61,7 +63,7 @@ class WarehouseList(Resource):
     @classmethod
     def get(cls):
         return get_paginated_list(
-            warehouse_list_schema.dump(WarehouseModel.find_all()),
+            serialize_models(WarehouseModel.find_all(), WarehouseResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -73,19 +75,21 @@ class WarehouseList(Resource):
     def post(cls):
         warehouse_json = request.get_json()
         print('request', request.headers)
-        warehouse_name = warehouse_json["name"]
+        warehouse_name = warehouse_json.get("name")
 
         if WarehouseModel.find_by_name(warehouse_name):
             return {"message": gettext("warehouse_exists").format(warehouse_name)}, 400
 
-        warehouse = warehouse_schema.load(warehouse_json)
-
         try:
+            validated_data = validate_request_data(warehouse_json, WarehouseCreate)
+            warehouse = WarehouseModel(**validated_data.model_dump())
             warehouse.save_to_db()
+        except ValidationError as e:
+            return {"errors": e.errors()}, 400
         except:
             return {"message": gettext("warehouse_error_inserting")}, 500
 
-        return warehouse_schema.dump(warehouse), 201
+        return serialize_model(warehouse, WarehouseResponse), 201
 
 
 class WarehouseListByCity(Resource):
@@ -93,7 +97,7 @@ class WarehouseListByCity(Resource):
     @classmethod
     def get(cls, city: str):
         return get_paginated_list(
-            warehouse_list_schema.dump(WarehouseModel.filter_by_city(city)),
+            serialize_models(WarehouseModel.filter_by_city(city), WarehouseResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -105,7 +109,7 @@ class CustomerListByWarehouse(Resource):
     @classmethod
     def get(cls, id: int):
         return get_paginated_list(
-            customer_list_schema.dump(WarehouseModel.find_associated_customers_by_id(id)),
+            serialize_models(WarehouseModel.find_associated_customers_by_id(id), CustomerResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')

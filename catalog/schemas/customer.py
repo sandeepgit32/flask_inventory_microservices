@@ -1,11 +1,32 @@
-from ma import ma
-from models.customer import CustomerModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 
-class CustomerSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = CustomerModel
-        load_instance = True 
-        # load_only = ("store",)
-        # dump_only = ("id",)
-        include_fk = True
+class CustomerBase(BaseModel):
+    name: str
+    city: Optional[str] = None
+    zipcode: Optional[str] = None
+    contact_person: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    warehouse_id: Optional[int] = None
+
+
+class CustomerCreate(CustomerBase):
+    pass
+
+
+class CustomerUpdate(BaseModel):
+    name: Optional[str] = None
+    city: Optional[str] = None
+    zipcode: Optional[str] = None
+    contact_person: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    warehouse_id: Optional[int] = None
+
+
+class CustomerResponse(CustomerBase):
+    id: int
+    
+    model_config = ConfigDict(from_attributes=True)

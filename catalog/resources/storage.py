@@ -1,12 +1,11 @@
 from flask_restful import Resource
 from flask import request
+from pydantic import ValidationError
 from models.storage import StorageModel
-from schemas.storage import StorageSchema
+from schemas.storage import StorageCreate, StorageUpdate, StorageResponse
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
-
-storage_schema = StorageSchema()
-storage_list_schema = StorageSchema(many=True)
+from libs.pydantic_helpers import serialize_model, serialize_models, validate_request_data
 
 
 class Storage(Resource):
@@ -16,7 +15,7 @@ class Storage(Resource):
         print(product_code, warehouse_name)
         storage = StorageModel.find_by_product_code_and_warehouse_name(product_code, warehouse_name)
         if storage:
-            return storage_schema.dump(storage), 200
+            return serialize_model(storage, StorageResponse), 200
 
         return {"message": gettext("storage_not_found").format(product_code, warehouse_name)}, 404
 
@@ -40,13 +39,17 @@ class StorageInsert(Resource):
             else:
                 return {"message": gettext("storage_cannot_be_updated")}, 404
         else:
-            storage_json["product_code"] = product_code
-            storage_json["warehouse_name"] = warehouse_name
-            storage = storage_schema.load(storage_json)
+            try:
+                storage_json["product_code"] = product_code
+                storage_json["warehouse_name"] = warehouse_name
+                validated_data = validate_request_data(storage_json, StorageCreate)
+                storage = StorageModel(**validated_data.model_dump())
+            except ValidationError as e:
+                return {"errors": e.errors()}, 400
         
         storage.save_to_db()
 
-        return storage_schema.dump(storage), 200
+        return serialize_model(storage, StorageResponse), 200
 
 
 class StorageList(Resource):
@@ -54,7 +57,7 @@ class StorageList(Resource):
     @classmethod
     def get(cls):
         return get_paginated_list(
-            storage_list_schema.dump(StorageModel.find_all()),
+            serialize_models(StorageModel.find_all(), StorageResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -67,13 +70,16 @@ class StorageList(Resource):
         # This request will not be used in practice. This is defined only to insert dummy data for testing
         # through 'upload.py' script.
         storage_json = request.get_json()
-        storage = storage_schema.load(storage_json)
         try:
+            validated_data = validate_request_data(storage_json, StorageCreate)
+            storage = StorageModel(**validated_data.model_dump())
             storage.save_to_db()
+        except ValidationError as e:
+            return {"errors": e.errors()}, 400
         except:
             return {"message": gettext("storage_error_inserting")}, 500
 
-        return storage_schema.dump(storage), 201
+        return serialize_model(storage, StorageResponse), 201
 
 
 class StorageListByProduct(Resource):
@@ -81,7 +87,7 @@ class StorageListByProduct(Resource):
     @classmethod
     def get(cls, product_code: str):
         return get_paginated_list(
-            storage_list_schema.dump(StorageModel.filter_by_product_code(product_code)),
+            serialize_models(StorageModel.filter_by_product_code(product_code), StorageResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -93,7 +99,7 @@ class StorageListByWarehouse(Resource):
     @classmethod
     def get(cls, warehouse_name: str):
         return get_paginated_list(
-            storage_list_schema.dump(StorageModel.filter_by_warehouse_name(warehouse_name)),
+            serialize_models(StorageModel.filter_by_warehouse_name(warehouse_name), StorageResponse),
             request.url,
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')

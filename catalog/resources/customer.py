@@ -1,12 +1,11 @@
 from flask import request
 from flask_restful import Resource
+from pydantic import ValidationError
 from models.customer import CustomerModel
-from schemas.customer import CustomerSchema
+from schemas.customer import CustomerCreate, CustomerUpdate, CustomerResponse
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
-
-customer_schema = CustomerSchema()
-customer_list_schema = CustomerSchema(many=True)
+from libs.pydantic_helpers import serialize_model, serialize_models, validate_request_data
 
 
 class Customer(Resource):
@@ -15,7 +14,7 @@ class Customer(Resource):
     def get(cls, id: str):
         customer = CustomerModel.find_by_id(id)
         if customer:
-            return customer_schema.dump(customer), 200
+            return serialize_model(customer, CustomerResponse), 200
 
         return {"message": gettext("customer_not_found")}, 404
 
@@ -40,14 +39,18 @@ class Customer(Resource):
         customer = CustomerModel.find_by_id(id)
 
         if customer:
-            # Dynamically setting attributes of the object 'customer' from 'customer_json' dict
-            for attribute in customer_json.keys():
-                setattr(customer, attribute, customer_json[attribute])
-            customer.save_to_db()
+            try:
+                validated_data = validate_request_data(customer_json, CustomerUpdate)
+                # Dynamically setting attributes of the object 'customer' from validated data
+                for field, value in validated_data.model_dump(exclude_unset=True).items():
+                    setattr(customer, field, value)
+                customer.save_to_db()
+            except ValidationError as e:
+                return {"errors": e.errors()}, 400
         else:
             return {"message": gettext("customer_not_found")}, 404
 
-        return customer_schema.dump(customer), 200
+        return serialize_model(customer, CustomerResponse), 200
 
 
 class CustomerList(Resource):
@@ -55,7 +58,7 @@ class CustomerList(Resource):
     @classmethod
     def get(cls):
         return get_paginated_list(
-            customer_list_schema.dump(CustomerModel.find_all()),
+            serialize_models(CustomerModel.find_all(), CustomerResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -66,19 +69,21 @@ class CustomerList(Resource):
     @classmethod
     def post(cls):
         customer_json = request.get_json()
-        customer_name = customer_json["name"]
+        customer_name = customer_json.get("name")
 
         if CustomerModel.find_by_name(customer_name):
             return {"message": gettext("customer_exists").format(customer_name)}, 400
 
-        customer = customer_schema.load(customer_json)
-
         try:
+            validated_data = validate_request_data(customer_json, CustomerCreate)
+            customer = CustomerModel(**validated_data.model_dump())
             customer.save_to_db()
+        except ValidationError as e:
+            return {"errors": e.errors()}, 400
         except:
             return {"message": gettext("customer_error_inserting")}, 500
 
-        return customer_schema.dump(customer), 201
+        return serialize_model(customer, CustomerResponse), 201
 
 
 class CustomerListByCity(Resource):
@@ -86,7 +91,7 @@ class CustomerListByCity(Resource):
     @classmethod
     def get(cls, city: str):
         return get_paginated_list(
-            customer_list_schema.dump(CustomerModel.filter_by_city(city)),
+            serialize_models(CustomerModel.filter_by_city(city), CustomerResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')

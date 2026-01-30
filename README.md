@@ -14,7 +14,7 @@ A microservices-based inventory management system built with Flask, featuring th
               │                                │                                │
               ▼                                ▼                                ▼
 ┌─────────────────────────┐    ┌─────────────────────────┐    ┌─────────────────────────┐
-│   Inventory Service     │    │  Supply Transaction     │    │  Customer Transaction   │
+│   Catalog Service       │    │  Supply Transaction     │    │  Customer Transaction   │
 │       (:5000)           │    │     Service (:5001)     │    │     Service (:5002)     │
 │                         │    │                         │    │                         │
 │  - Products             │    │  - Supply Transactions  │    │  - Customer             │
@@ -35,7 +35,7 @@ A microservices-based inventory management system built with Flask, featuring th
 
 The system consists of three microservices:
 
-1. **Inventory Service** (`inventory/`) - Core inventory management
+1. **Catalog Service** (`catalog/`) - Core catalog management
    - Manages Products, Suppliers, Customers, Warehouses, and Storage
    - Consumes messages from Redis queue to update storage quantities
 
@@ -50,7 +50,7 @@ The system consists of three microservices:
 
 - **Framework**: Flask, Flask-RESTful
 - **Database**: SQLAlchemy (SQLite for development, MySQL for production)
-- **Serialization**: Marshmallow, Flask-Marshmallow
+- **Serialization**: Pydantic
 - **Message Queue**: Redis (using Redis Lists)
 - **Containerization**: Docker, Docker Compose
 - **Reverse Proxy**: Nginx
@@ -58,7 +58,7 @@ The system consists of three microservices:
 ## Project Structure
 
 ```
-├── inventory/                     # Inventory microservice
+├── catalog/                      # Catalog microservice
 │   ├── models/                   # SQLAlchemy models
 │   │   ├── product.py           # Product model
 │   │   ├── supplier.py          # Supplier model
@@ -66,7 +66,7 @@ The system consists of three microservices:
 │   │   ├── warehouse.py         # Warehouse model
 │   │   └── storage.py           # Storage model
 │   ├── resources/               # REST API endpoints
-│   ├── schemas/                 # Marshmallow schemas
+│   ├── schemas/                 # Pydantic schemas
 │   ├── libs/                    # Utilities (pagination, strings)
 │   ├── dummy_data/              # Sample data for testing
 │   ├── consumer.py              # Redis queue consumer
@@ -75,13 +75,13 @@ The system consists of three microservices:
 ├── supply_transaction/           # Supply transaction microservice
 │   ├── models/                  # Transaction model
 │   ├── resources/               # REST API endpoints
-│   ├── schemas/                 # Marshmallow schemas
+│   ├── schemas/                 # Pydantic schemas
 │   ├── producer.py              # Redis queue producer
 │   └── app.py                   # Application entry point
 ├── customer_transaction/         # Customer transaction microservice
 │   ├── models/                  # Transaction model
 │   ├── resources/               # REST API endpoints
-│   ├── schemas/                 # Marshmallow schemas
+│   ├── schemas/                 # Pydantic schemas
 │   └── main.py                  # Application entry point
 ├── message_queue/                # Message queue service (Redis)
 │   ├── Dockerfile               # Redis Docker configuration
@@ -98,7 +98,7 @@ The system consists of three microservices:
 
 ## API Endpoints
 
-### Inventory Service
+### Catalog Service
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -211,7 +211,7 @@ All services are managed through a single `docker-compose.yml` file.
 
 1. **Install dependencies for each service:**
    ```bash
-   cd inventory && pip install -r requirements.txt
+   cd catalog && pip install -r requirements.txt
    cd ../supply_transaction && pip install -r requirements.txt
    cd ../customer_transaction && pip install -r requirements.txt
    ```
@@ -223,8 +223,8 @@ All services are managed through a single `docker-compose.yml` file.
 
 3. **Run each service in separate terminals:**
    ```bash
-   # Terminal 1: Inventory Service
-   cd inventory && python main.py
+   # Terminal 1: Catalog Service
+   cd catalog && python main.py
    
    # Terminal 2: Supply Transaction Service
    cd supply_transaction && python app.py
@@ -232,8 +232,8 @@ All services are managed through a single `docker-compose.yml` file.
    # Terminal 3: Customer Transaction Service
    cd customer_transaction && python main.py
    
-   # Terminal 4: Redis Queue Consumer (for inventory updates)
-   cd inventory && python consumer.py
+   # Terminal 4: Redis Queue Consumer (for catalog updates)
+   cd catalog && python consumer.py
    ```
 
 ### Loading Sample Data
@@ -241,7 +241,7 @@ All services are managed through a single `docker-compose.yml` file.
 Each service includes dummy data that can be loaded using the upload scripts:
 
 ```bash
-cd inventory/dummy_data && ./upload.sh
+cd catalog/dummy_data && ./upload.sh
 cd supply_transaction/dummy_data && ./upload.sh
 cd customer_transaction/dummy_data && ./upload.sh
 ```
@@ -252,7 +252,7 @@ cd customer_transaction/dummy_data && ./upload.sh
 |---------|--------------|---------------------------|
 | Nginx Reverse Proxy | 80 | 8080 |
 | Redis Queue | 6379 | 6379 |
-| Inventory API | 5000 | Via Nginx |
+| Catalog API | 5000 | Via Nginx |
 | Supply Transaction API | 5000 | Via Nginx |
 | Customer Transaction API | 5000 | Via Nginx |
 
@@ -261,8 +261,8 @@ cd customer_transaction/dummy_data && ./upload.sh
 When a supply transaction is created:
 1. The Supply Transaction Service records the transaction in its database
 2. It publishes a message to Redis queue with product code, warehouse name, and quantity
-3. The Inventory Service's consumer picks up the message from the Redis list
-4. The storage quantity is updated in the Inventory database
+3. The Catalog Service's consumer picks up the message from the Redis list
+4. The storage quantity is updated in the Catalog database
 
 ### Message Queue Configuration
 
@@ -273,7 +273,7 @@ The message queue service is configured via `message_queue/.env`:
 | `REDIS_HOST` | Redis server hostname | `redis_queue` |
 | `REDIS_PORT` | Redis server port | `6379` |
 | `REDIS_PASSWORD` | Redis password (optional) | `None` |
-| `REDIS_QUEUE_NAME` | Name of the queue | `inventory_updates` |
+| `REDIS_QUEUE_NAME` | Name of the queue | `catalog_updates` |
 
 ## Environment Configuration
 

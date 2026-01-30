@@ -15,7 +15,8 @@ load_dotenv('message_queue/.env', verbose=True)
 
 from app import create_app
 from models.storage import StorageModel
-from schemas.storage import StorageSchema
+from schemas.storage import StorageCreate
+from libs.pydantic_helpers import validate_request_data
 
 # The following models need to be imported as StorageModel has foreignkey
 # relationship with these two ProductModel and WarehouseModel. Similarly
@@ -26,8 +27,6 @@ from models.supplier import SupplierModel
 from models.customer import CustomerModel
 
 from message_queue.consumer import create_consumer
-
-storage_schema = StorageSchema()
 
 
 def process_inventory_update(message_body: dict):
@@ -52,7 +51,8 @@ def process_inventory_update(message_body: dict):
         if storage:
             storage.quantity += message_body["quantity"]
         else:
-            storage = storage_schema.load(message_body)
+            validated_data = validate_request_data(message_body, StorageCreate)
+            storage = StorageModel(**validated_data.model_dump())
         
         storage.save_to_db()
         print(f" [✓] Updated storage: {message_body}")

@@ -2,7 +2,8 @@ import os
 from flask import jsonify
 from app import create_app
 from flask_restful import Api
-from marshmallow import ValidationError
+from pydantic import ValidationError
+from libs.pydantic_helpers import handle_validation_error
 from resources.transaction import TransactionList, TransactionListByProduct, TransactionListByCustomer, TransactionListByProductAndCustomer
 
 app = create_app(os.environ.get("FLASK_ENV"))
@@ -18,7 +19,7 @@ api.add_resource(TransactionListByProductAndCustomer, "/customertransactions/pro
 
 @app.errorhandler(ValidationError)
 def handle_marshmallow_validation(err):
-    return jsonify(err.messages), 400
+    return handle_validation_error(err)
 
 
 if __name__ == "__main__":

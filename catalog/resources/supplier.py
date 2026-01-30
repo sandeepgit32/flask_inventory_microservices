@@ -1,14 +1,12 @@
 from flask_restful import Resource
 from flask import request
+from pydantic import ValidationError
 from models.supplier import SupplierModel
-from schemas.supplier import SupplierSchema
-from schemas.product import ProductSchema
+from schemas.supplier import SupplierCreate, SupplierUpdate, SupplierResponse
+from schemas.product import ProductResponse
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
-
-supplier_schema = SupplierSchema()
-supplier_list_schema = SupplierSchema(many=True)
-product_list_schema = ProductSchema(many=True)
+from libs.pydantic_helpers import serialize_model, serialize_models, validate_request_data
 
 
 class Supplier(Resource):
@@ -17,7 +15,7 @@ class Supplier(Resource):
     def get(cls, id: int):
         supplier = SupplierModel.find_by_id(id)
         if supplier:
-            return supplier_schema.dump(supplier), 200
+            return serialize_model(supplier, SupplierResponse), 200
 
         return {"message": gettext("supplier_not_found")}, 404
 
@@ -42,14 +40,18 @@ class Supplier(Resource):
         supplier = SupplierModel.find_by_id(id)
 
         if supplier:
-            # Dynamically setting attributes of the object 'supplier' from 'supplier_json' dict
-            for attribute in supplier_json.keys():
-                setattr(supplier, attribute, supplier_json[attribute])
-            supplier.save_to_db()
+            try:
+                validated_data = validate_request_data(supplier_json, SupplierUpdate)
+                # Dynamically setting attributes of the object 'supplier' from validated data
+                for field, value in validated_data.model_dump(exclude_unset=True).items():
+                    setattr(supplier, field, value)
+                supplier.save_to_db()
+            except ValidationError as e:
+                return {"errors": e.errors()}, 400
         else:
             return {"message": gettext("supplier_not_found")}, 404
 
-        return supplier_schema.dump(supplier), 200
+        return serialize_model(supplier, SupplierResponse), 200
 
 
 class SupplierList(Resource):
@@ -57,7 +59,7 @@ class SupplierList(Resource):
     @classmethod
     def get(cls):
         return get_paginated_list(
-            supplier_list_schema.dump(SupplierModel.find_all()),
+            serialize_models(SupplierModel.find_all(), SupplierResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -68,19 +70,21 @@ class SupplierList(Resource):
     @classmethod
     def post(cls):
         supplier_json = request.get_json()
-        supplier_name = supplier_json["name"]
+        supplier_name = supplier_json.get("name")
 
         if SupplierModel.find_by_name(supplier_name):
             return {"message": gettext("supplier_exists").format(supplier_name)}, 400
 
-        supplier = supplier_schema.load(supplier_json)
-
         try:
+            validated_data = validate_request_data(supplier_json, SupplierCreate)
+            supplier = SupplierModel(**validated_data.model_dump())
             supplier.save_to_db()
+        except ValidationError as e:
+            return {"errors": e.errors()}, 400
         except:
             return {"message": gettext("supplier_error_inserting")}, 500
 
-        return supplier_schema.dump(supplier), 201
+        return serialize_model(supplier, SupplierResponse), 201
 
 
 class SupplierListByCity(Resource):
@@ -88,7 +92,7 @@ class SupplierListByCity(Resource):
     @classmethod
     def get(cls, city: str):
         return get_paginated_list(
-            supplier_list_schema.dump(SupplierModel.filter_by_city(city)),
+            serialize_models(SupplierModel.filter_by_city(city), SupplierResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -100,7 +104,7 @@ class ProductListBySupplier(Resource):
     @classmethod
     def get(cls, id: int):
         return get_paginated_list(
-            product_list_schema.dump(SupplierModel.find_related_products_by_id(id)),
+            serialize_models(SupplierModel.find_related_products_by_id(id), ProductResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')

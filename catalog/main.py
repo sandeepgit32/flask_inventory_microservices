@@ -2,7 +2,8 @@ import os
 from flask import jsonify
 from flask_restful import Api
 from app import create_app
-from marshmallow import ValidationError
+from pydantic import ValidationError
+from libs.pydantic_helpers import handle_validation_error
 
 from resources.product import Product, ProductList
 from resources.supplier import Supplier, SupplierList, SupplierListByCity, ProductListBySupplier
@@ -42,7 +43,7 @@ api.add_resource(StorageListByWarehouse, "/storages/warehouse/<string:warehouse_
 
 @app.errorhandler(ValidationError)
 def handle_marshmallow_validation(err):
-    return jsonify(err.messages), 400
+    return handle_validation_error(err)
 
 
 if __name__ == "__main__":

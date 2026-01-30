@@ -1,12 +1,11 @@
 from flask_restful import Resource
 from flask import request
+from pydantic import ValidationError
 from models.product import ProductModel
-from schemas.product import ProductSchema
+from schemas.product import ProductCreate, ProductUpdate, ProductResponse
 from libs.strings import gettext
 from libs.pagination import get_paginated_list
-
-product_schema = ProductSchema()
-product_list_schema = ProductSchema(many=True)
+from libs.pydantic_helpers import serialize_model, serialize_models, validate_request_data
 
 
 class Product(Resource):
@@ -15,7 +14,7 @@ class Product(Resource):
     def get(cls, product_code: str):
         product = ProductModel.find_by_code(product_code)
         if product:
-            return product_schema.dump(product), 200
+            return serialize_model(product, ProductResponse), 200
 
         return {"message": gettext("product_not_found")}, 404
 
@@ -40,14 +39,18 @@ class Product(Resource):
         product = ProductModel.find_by_code(product_code)
 
         if product:
-            # Dynamically setting attributes of the object 'product' from 'product_json' dict
-            for attribute in product_json.keys():
-                setattr(product, attribute, product_json[attribute])
-            product.save_to_db()
+            try:
+                validated_data = validate_request_data(product_json, ProductUpdate)
+                # Dynamically setting attributes of the object 'product' from validated data
+                for field, value in validated_data.model_dump(exclude_unset=True).items():
+                    setattr(product, field, value)
+                product.save_to_db()
+            except ValidationError as e:
+                return {"errors": e.errors()}, 400
         else:
             return {"message": gettext("product_not_found")}, 404
 
-        return product_schema.dump(product), 200
+        return serialize_model(product, ProductResponse), 200
 
 
 class ProductList(Resource):
@@ -55,7 +58,7 @@ class ProductList(Resource):
     @classmethod
     def get(cls):
         return get_paginated_list(
-            product_list_schema.dump(ProductModel.find_all()),
+            serialize_models(ProductModel.find_all(), ProductResponse),
             request.url, 
             start=request.args.get('start', default=1), 
             limit=request.args.get('limit')
@@ -65,16 +68,18 @@ class ProductList(Resource):
     @classmethod
     def post(cls):
         product_json = request.get_json()
-        product_code = product_json["product_code"]
+        product_code = product_json.get("product_code")
 
         if ProductModel.find_by_code(product_code):
             return {"message": gettext("product_code_exists").format(product_code)}, 400
 
-        product = product_schema.load(product_json)
-
         try:
+            validated_data = validate_request_data(product_json, ProductCreate)
+            product = ProductModel(**validated_data.model_dump())
             product.save_to_db()
+        except ValidationError as e:
+            return {"errors": e.errors()}, 400
         except:
             return {"message": gettext("product_error_inserting")}, 500
 
-        return product_schema.dump(product), 201
+        return serialize_model(product, ProductResponse), 201

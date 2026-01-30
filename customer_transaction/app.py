@@ -1,7 +1,6 @@
 from flask import Flask
 
 from db import db
-from ma import ma
 
 def create_app(config_name='dev'):
     app = Flask(__name__)
@@ -14,7 +13,6 @@ def create_app(config_name='dev'):
         app.config.from_object('config.ProdConfig')
 
     db.init_app(app)
-    ma.init_app(app)
 
     with app.app_context():
         db.create_all()
