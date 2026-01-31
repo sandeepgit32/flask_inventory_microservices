@@ -10,23 +10,6 @@ networks:
 
 services:
   # ===========================================
-  # Frontend Service
-  # ===========================================
-
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - 8080:80
-    depends_on:
-      - api_gateway
-    restart: always
-    networks:
-      - inventory-network
-
-  # ===========================================
   # Infrastructure Services
   # ===========================================
 
@@ -68,6 +51,215 @@ services:
       timeout: 5s
       retries: 5
 
+  # ===========================================
+  # Microservices
+  # ===========================================
+
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: auth/Dockerfile
+    ports:
+      - 5003:5003
+    environment:
+      - DATABASE_HOST=inventory_db_host
+      - DATABASE_PORT=3306
+      - REDIS_HOST=redis_queue
+      - REDIS_PORT=6379
+      - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+    restart: always
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  supplier:
+    container_name: supplier
+    build:
+      context: .
+      dockerfile: supplier/Dockerfile
+    ports:
+      - 5004:5004
+    environment:
+      - DATABASE_HOST=inventory_db_host
+      - DATABASE_PORT=3306
+      - REDIS_HOST=redis_queue
+      - REDIS_PORT=6379
+    depends_on:
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+    restart: always
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  customer:
+    container_name: customer
+    build:
+      context: .
+      dockerfile: customer/Dockerfile
+    ports:
+      - 5005:5005
+    environment:
+      - DATABASE_HOST=inventory_db_host
+      - DATABASE_PORT=3306
+      - REDIS_HOST=redis_queue
+      - REDIS_PORT=6379
+    depends_on:
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+    restart: always
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5005/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  product:
+    container_name: product
+    build:
+      context: .
+      dockerfile: product/Dockerfile
+    ports:
+      - 5000:5000
+    environment:
+      - DATABASE_HOST=inventory_db_host
+      - DATABASE_PORT=3306
+      - REDIS_HOST=redis_queue
+      - REDIS_PORT=6379
+      - SUPPLIER_SERVICE_URL=http://supplier:5004
+    depends_on:
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+      supplier:
+        condition: service_healthy
+    restart: always
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  inventory:
+    container_name: inventory
+    build:
+      context: .
+      dockerfile: inventory/Dockerfile
+    ports:
+      - 5006:5006
+    environment:
+      - DATABASE_HOST=inventory_db_host
+      - DATABASE_PORT=3306
+      - REDIS_HOST=redis_queue
+      - REDIS_PORT=6379
+    depends_on:
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+    restart: always
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5006/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  procurement:
+    container_name: procurement
+    build:
+      context: .
+      dockerfile: procurement/Dockerfile
+    ports:
+      - 5001:5001
+    environment:
+      - DATABASE_HOST=inventory_db_host
+      - DATABASE_PORT=3306
+      - REDIS_HOST=redis_queue
+      - REDIS_PORT=6379
+      - SUPPLIER_SERVICE_URL=http://supplier:5004
+      - PRODUCT_SERVICE_URL=http://product:5000
+    depends_on:
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+      supplier:
+        condition: service_healthy
+      product:
+        condition: service_healthy
+    restart: always
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  order:
+    container_name: order
+    build:
+      context: .
+      dockerfile: order/Dockerfile
+    ports:
+      - 5002:5002
+    environment:
+      - DATABASE_HOST=inventory_db_host
+      - DATABASE_PORT=3306
+      - REDIS_HOST=redis_queue
+      - REDIS_PORT=6379
+      - CUSTOMER_SERVICE_URL=http://customer:5005
+      - PRODUCT_SERVICE_URL=http://product:5000
+    depends_on:
+      inventory_db:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+      customer:
+        condition: service_healthy
+      product:
+        condition: service_healthy
+    restart: always
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   api_gateway:
     container_name: api_gateway
     build:
@@ -76,86 +268,50 @@ services:
     ports:
       - 8000:8000
     environment:
-      - CATALOG_SERVICE_URL=http://catalog_api:5000
-      - SUPPLY_TRANSACTION_SERVICE_URL=http://supplytransaction_api:5000
-      - CUSTOMER_TRANSACTION_SERVICE_URL=http://customertransaction_api:5000
+      - AUTH_SERVICE_URL=http://auth:5003
+      - PRODUCT_SERVICE_URL=http://product:5000
+      - SUPPLIER_SERVICE_URL=http://supplier:5004
+      - CUSTOMER_SERVICE_URL=http://customer:5005
+      - INVENTORY_SERVICE_URL=http://inventory:5006
+      - PROCUREMENT_SERVICE_URL=http://procurement:5001
+      - ORDER_SERVICE_URL=http://order:5002
     depends_on:
-      - catalog_api
-      - supplytransaction_api
-      - customertransaction_api
-    restart: always
-    networks:
-      - inventory-network
-
-  # ===========================================
-  # Catalog Service
-  # ===========================================
-  
-  catalog_api:
-    container_name: catalog_api
-    build:
-      context: ./catalog
-      dockerfile: Dockerfile
-    volumes:
-      - ./catalog:/app
-      - ./message_queue:/app/message_queue
-    ports:
-      - 5000:5000
-    env_file:
-      - ./catalog/.env
-      - ./message_queue/.env
-    depends_on:
-      inventory_db:
+      auth:
         condition: service_healthy
-      redis_queue:
+      supplier:
+        condition: service_healthy
+      customer:
+        condition: service_healthy
+      product:
+        condition: service_healthy
+      inventory:
+        condition: service_healthy
+      procurement:
+        condition: service_healthy
+      order:
         condition: service_healthy
     restart: always
     networks:
       - inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ===========================================
-  # Supply Transaction Service
+  # Frontend Service
   # ===========================================
-  
-  supplytransaction_api:
-    container_name: supplytransaction_api
-    build:
-      context: ./supply_transaction
-      dockerfile: Dockerfile
-    volumes:
-      - ./supply_transaction:/app
-      - ./message_queue:/app/message_queue
-    ports:
-      - 5001:5000
-    env_file:
-      - ./supply_transaction/.env
-      - ./message_queue/.env
-    depends_on:
-      inventory_db:
-        condition: service_healthy
-      redis_queue:
-        condition: service_healthy
-    restart: always
-    networks:
-      - inventory-network
 
-  # ===========================================
-  # Customer Transaction Service
-  # ===========================================
-  
-  customertransaction_api:
-    container_name: customertransaction_api
+  frontend:
+    container_name: frontend
     build:
-      context: ./customer_transaction
+      context: ./frontend
       dockerfile: Dockerfile
-    volumes:
-      - ./customer_transaction:/app
     ports:
-      - 5002:5000
-    env_file:
-      - ./customer_transaction/.env
+      - 8080:80
     depends_on:
-      inventory_db:
+      api_gateway:
         condition: service_healthy
     restart: always
     networks:

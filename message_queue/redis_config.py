@@ -2,6 +2,7 @@
 Redis Message Queue Configuration
 """
 import os
+import redis
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,3 +33,26 @@ class RedisConfig:
         if cls.PASSWORD:
             params['password'] = cls.PASSWORD
         return params
+
+
+# Redis connection pool for efficient connection reuse
+_redis_pool = None
+
+
+def get_redis_client() -> redis.Redis:
+    """
+    Get a Redis client from the connection pool.
+    Creates the pool on first call.
+    """
+    global _redis_pool
+    if _redis_pool is None:
+        _redis_pool = redis.ConnectionPool(
+            host=RedisConfig.HOST,
+            port=RedisConfig.PORT,
+            password=RedisConfig.PASSWORD,
+            decode_responses=True,
+            max_connections=RedisConfig.MAX_CONNECTIONS,
+            socket_timeout=RedisConfig.SOCKET_TIMEOUT,
+            socket_connect_timeout=RedisConfig.SOCKET_CONNECT_TIMEOUT
+        )
+    return redis.Redis(connection_pool=_redis_pool)

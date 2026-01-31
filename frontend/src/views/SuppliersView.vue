@@ -156,7 +156,7 @@ const fetchSuppliers = async () => {
   try {
     loading.value = true
     const response = await supplierService.getAll()
-    suppliers.value = response.data.results || response.data || []
+    suppliers.value = response.data.suppliers || response.data.results || []
   } catch (error) {
     showToast('Failed to load suppliers', 'error')
   } finally {

@@ -33,7 +33,6 @@
               <th class="table-header">Contact Person</th>
               <th class="table-header">Phone</th>
               <th class="table-header">Email</th>
-              <th class="table-header">Warehouse</th>
               <th class="table-header text-right">Actions</th>
             </tr>
           </thead>
@@ -46,12 +45,6 @@
               <td class="table-cell">{{ customer.contact_person || 'N/A' }}</td>
               <td class="table-cell">{{ customer.phone || 'N/A' }}</td>
               <td class="table-cell">{{ customer.email || 'N/A' }}</td>
-              <td class="table-cell">
-                <span v-if="customer.warehouse_id" class="px-2.5 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-medium">
-                  #{{ customer.warehouse_id }}
-                </span>
-                <span v-else class="text-gray-400">N/A</span>
-              </td>
               <td class="table-cell text-right">
                 <div class="flex items-center justify-end gap-2">
                   <button @click="openEditModal(customer)" class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
@@ -168,7 +161,7 @@ const fetchCustomers = async () => {
   try {
     loading.value = true
     const response = await customerService.getAll()
-    customers.value = response.data.results || response.data || []
+    customers.value = response.data.customers || response.data.results || []
   } catch (error) {
     showToast('Failed to load customers', 'error')
   } finally {

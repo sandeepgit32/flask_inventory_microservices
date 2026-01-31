@@ -1,6 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { authService } from '@/services/api'
 
 const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/LoginView.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('../views/RegisterView.vue'),
+    meta: { requiresAuth: false }
+  },
   {
     path: '/',
     redirect: '/products'
@@ -8,43 +21,58 @@ const routes = [
   {
     path: '/products',
     name: 'Products',
-    component: () => import('../views/ProductsView.vue')
+    component: () => import('../views/ProductsView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/suppliers',
     name: 'Suppliers',
-    component: () => import('../views/SuppliersView.vue')
+    component: () => import('../views/SuppliersView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/customers',
     name: 'Customers',
-    component: () => import('../views/CustomersView.vue')
+    component: () => import('../views/CustomersView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: '/warehouses',
-    name: 'Warehouses',
-    component: () => import('../views/WarehousesView.vue')
+    path: '/inventory',
+    name: 'Inventory',
+    component: () => import('../views/StoragesView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: '/storages',
-    name: 'Storages',
-    component: () => import('../views/StoragesView.vue')
+    path: '/procurements',
+    name: 'Procurements',
+    component: () => import('../views/ProcurementsView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: '/supply-transactions',
-    name: 'SupplyTransactions',
-    component: () => import('../views/SupplyTransactionsView.vue')
-  },
-  {
-    path: '/customer-transactions',
-    name: 'CustomerTransactions',
-    component: () => import('../views/CustomerTransactionsView.vue')
+    path: '/orders',
+    name: 'Orders',
+    component: () => import('../views/OrdersView.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// Navigation guard to check authentication
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const isAuthenticated = authService.isAuthenticated()
+
+  if (requiresAuth && !isAuthenticated) {
+    next('/login')
+  } else if (!requiresAuth && isAuthenticated && (to.path === '/login' || to.path === '/register')) {
+    next('/products')
+  } else {
+    next()
+  }
 })
 
 export default router

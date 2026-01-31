@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div v-if="!isAuthPage" class="min-h-screen bg-gray-50">
     <!-- Navigation -->
     <nav class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,6 +27,17 @@
             >
               {{ item.name }}
             </router-link>
+            
+            <!-- User Menu -->
+            <div class="ml-4 flex items-center gap-3 pl-4 border-l border-gray-200">
+              <span class="text-sm text-gray-600">{{ currentUser?.username }}</span>
+              <button 
+                @click="handleLogout" 
+                class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+              >
+                Logout
+              </button>
+            </div>
           </div>
 
           <!-- Mobile menu button -->
@@ -54,6 +65,12 @@
           >
             {{ item.name }}
           </router-link>
+          <button 
+            @click="handleLogout"
+            class="w-full text-left px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </nav>
@@ -72,20 +89,42 @@
       </div>
     </footer>
   </div>
+  
+  <!-- Auth pages without navigation -->
+  <div v-else class="min-h-screen">
+    <router-view />
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { authService } from '@/services/api'
 
+const router = useRouter()
+const route = useRoute()
 const mobileMenuOpen = ref(false)
+const currentUser = ref(null)
+
+const isAuthPage = computed(() => {
+  return route.path === '/login' || route.path === '/register'
+})
 
 const navItems = [
   { name: 'Products', path: '/products' },
   { name: 'Suppliers', path: '/suppliers' },
   { name: 'Customers', path: '/customers' },
-  { name: 'Warehouses', path: '/warehouses' },
-  { name: 'Storage', path: '/storages' },
-  { name: 'Supply Trans.', path: '/supply-transactions' },
-  { name: 'Customer Trans.', path: '/customer-transactions' },
+  { name: 'Inventory', path: '/inventory' },
+  { name: 'Procurements', path: '/procurements' },
+  { name: 'Orders', path: '/orders' },
 ]
+
+const handleLogout = () => {
+  authService.logout()
+  router.push('/login')
+}
+
+onMounted(() => {
+  currentUser.value = authService.getCurrentUser()
+})
 </script>

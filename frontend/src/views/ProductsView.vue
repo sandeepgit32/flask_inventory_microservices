@@ -40,7 +40,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr v-for="product in products" :key="product.product_code" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="product in products" :key="product.id" class="hover:bg-gray-50 transition-colors">
               <td class="table-cell font-medium text-primary-600">{{ product.product_code }}</td>
               <td class="table-cell font-medium text-gray-900">{{ product.name }}</td>
               <td class="table-cell">
@@ -51,7 +51,7 @@
               <td class="table-cell">${{ product.price_buy?.toFixed(2) }}</td>
               <td class="table-cell">${{ product.price_sell?.toFixed(2) }}</td>
               <td class="table-cell">{{ product.measure_unit || 'N/A' }}</td>
-              <td class="table-cell">{{ product.supplier_name }}</td>
+              <td class="table-cell">{{ product.supplier?.name || 'N/A' }}</td>
               <td class="table-cell text-right">
                 <div class="flex items-center justify-end gap-2">
                   <button @click="openEditModal(product)" class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
@@ -111,8 +111,13 @@
             <input v-model="form.measure_unit" type="text" class="input" placeholder="e.g., kg, pcs, ltr" />
           </div>
           <div>
-            <label class="label">Supplier Name *</label>
-            <input v-model="form.supplier_name" type="text" class="input" required />
+            <label class="label">Supplier *</label>
+            <select v-model="form.supplier_id" class="input" required>
+              <option value="">Select supplier</option>
+              <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                {{ supplier.name }}
+              </option>
+            </select>
           </div>
         </div>
       </form>
@@ -135,7 +140,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { productService } from '../services/api'
+import { productService, supplierService } from '../services/api'
 import PageHeader from '../components/PageHeader.vue'
 import Modal from '../components/Modal.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
@@ -144,6 +149,7 @@ import EmptyState from '../components/EmptyState.vue'
 import Toast from '../components/Toast.vue'
 
 const products = ref([])
+const suppliers = ref([])
 const loading = ref(true)
 const saving = ref(false)
 const deleting = ref(false)
@@ -159,7 +165,7 @@ const form = ref({
   price_buy: 0,
   price_sell: 0,
   measure_unit: '',
-  supplier_name: ''
+  supplier_id: ''
 })
 
 const toast = ref({ show: false, message: '', type: 'success' })
@@ -173,7 +179,7 @@ const fetchProducts = async () => {
   try {
     loading.value = true
     const response = await productService.getAll()
-    products.value = response.data.results || response.data || []
+    products.value = response.data.products || response.data || []
   } catch (error) {
     showToast('Failed to load products', 'error')
   } finally {
@@ -181,16 +187,36 @@ const fetchProducts = async () => {
   }
 }
 
+const loadSuppliers = async () => {
+  try {
+    const response = await supplierService.getAll()
+    suppliers.value = response.data.suppliers || response.data || []
+  } catch (error) {
+    console.error('Error loading suppliers:', error)
+  }
+}
+
 const openCreateModal = () => {
   isEditing.value = false
-  form.value = { product_code: '', name: '', category: '', price_buy: 0, price_sell: 0, measure_unit: '', supplier_name: '' }
+  form.value = { product_code: '', name: '', category: '', price_buy: 0, price_sell: 0, measure_unit: '', supplier_id: '' }
   showModal.value = true
+  if (suppliers.value.length === 0) loadSuppliers()
 }
 
 const openEditModal = (product) => {
   isEditing.value = true
-  form.value = { ...product }
+  form.value = { 
+    id: product.id,
+    product_code: product.product_code,
+    name: product.name,
+    category: product.category,
+    price_buy: product.price_buy,
+    price_sell: product.price_sell,
+    measure_unit: product.measure_unit,
+    supplier_id: product.supplier_id || product.supplier?.id
+  }
   showModal.value = true
+  if (suppliers.value.length === 0) loadSuppliers()
 }
 
 const closeModal = () => {
@@ -200,11 +226,21 @@ const closeModal = () => {
 const saveProduct = async () => {
   try {
     saving.value = true
+    const data = {
+      product_code: form.value.product_code,
+      name: form.value.name,
+      category: form.value.category,
+      price_buy: form.value.price_buy,
+      price_sell: form.value.price_sell,
+      measure_unit: form.value.measure_unit,
+      supplier_id: parseInt(form.value.supplier_id)
+    }
+    
     if (isEditing.value) {
-      await productService.update(form.value.product_code, form.value)
+      await productService.update(form.value.id, data)
       showToast('Product updated successfully')
     } else {
-      await productService.create(form.value)
+      await productService.create(data)
       showToast('Product created successfully')
     }
     closeModal()
@@ -224,7 +260,7 @@ const confirmDelete = (product) => {
 const deleteProduct = async () => {
   try {
     deleting.value = true
-    await productService.delete(productToDelete.value.product_code)
+    await productService.delete(productToDelete.value.id)
     showToast('Product deleted successfully')
     showDeleteDialog.value = false
     fetchProducts()

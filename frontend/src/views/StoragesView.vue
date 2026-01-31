@@ -1,24 +1,24 @@
 <template>
   <div>
-    <PageHeader title="Storage" subtitle="View product storage across warehouses">
+    <PageHeader title="Inventory" subtitle="View product stock levels">
       <template #actions>
         <button @click="openCreateModal" class="btn btn-primary flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
-          Add Storage
+          Add Stock
         </button>
       </template>
     </PageHeader>
 
-    <LoadingSpinner v-if="loading" message="Loading storage records..." />
+    <LoadingSpinner v-if="loading" message="Loading inventory..." />
 
     <EmptyState 
       v-else-if="storages.length === 0" 
-      title="No storage records yet"
-      message="Storage records are created when products are added to warehouses."
+      title="No inventory records yet"
+      message="Add stock for products to track inventory levels."
     >
-      <button @click="openCreateModal" class="btn btn-primary">Add Storage</button>
+      <button @click="openCreateModal" class="btn btn-primary">Add Stock</button>
     </EmptyState>
 
     <div v-else class="card">
@@ -27,8 +27,7 @@
           <thead>
             <tr class="border-b border-gray-100">
               <th class="table-header">ID</th>
-              <th class="table-header">Product Code</th>
-              <th class="table-header">Warehouse</th>
+              <th class="table-header">Product</th>
               <th class="table-header">Quantity</th>
               <th class="table-header text-right">Actions</th>
             </tr>
@@ -37,11 +36,13 @@
             <tr v-for="storage in storages" :key="storage.id" class="hover:bg-gray-50 transition-colors">
               <td class="table-cell font-medium text-gray-500">#{{ storage.id }}</td>
               <td class="table-cell">
-                <span class="px-2.5 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-medium">
-                  {{ storage.product_code }}
-                </span>
+                <div>
+                  <span class="px-2.5 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-medium">
+                    {{ storage.product?.code || `Product #${storage.product_id}` }}
+                  </span>
+                  <p class="text-sm text-gray-600 mt-1">{{ storage.product?.name || '' }}</p>
+                </div>
               </td>
-              <td class="table-cell font-medium text-gray-900">{{ storage.warehouse_name }}</td>
               <td class="table-cell">
                 <span 
                   class="px-3 py-1 rounded-full text-sm font-medium"
@@ -66,23 +67,24 @@
     <!-- Create Modal -->
     <Modal 
       :show="showCreateModal" 
-      title="Add Storage"
+      title="Add Stock"
       :loading="saving"
       @close="showCreateModal = false"
       @submit="createStorage"
     >
       <form @submit.prevent="createStorage" class="space-y-4">
         <div>
-          <label class="label">Product Code *</label>
-          <input v-model="createForm.product_code" type="text" class="input" required />
-        </div>
-        <div>
-          <label class="label">Warehouse Name *</label>
-          <input v-model="createForm.warehouse_name" type="text" class="input" required />
+          <label class="label">Product *</label>
+          <select v-model="createForm.product_id" class="input" required>
+            <option value="">Select product</option>
+            <option v-for="product in products" :key="product.id" :value="product.id">
+              {{ product.code }} - {{ product.name }}
+            </option>
+          </select>
         </div>
         <div>
           <label class="label">Quantity *</label>
-          <input v-model.number="createForm.quantity" type="number" class="input" required />
+          <input v-model.number="createForm.quantity" type="number" min="0" class="input" required />
         </div>
       </form>
     </Modal>
@@ -90,27 +92,19 @@
     <!-- Update Modal -->
     <Modal 
       :show="showUpdateModal" 
-      title="Update Storage Quantity"
+      title="Update Stock"
       :loading="saving"
       @close="showUpdateModal = false"
       @submit="updateStorage"
     >
       <form @submit.prevent="updateStorage" class="space-y-4">
-        <div class="bg-gray-50 rounded-lg p-4 mb-4">
-          <p class="text-sm text-gray-500">Product: <span class="font-medium text-gray-900">{{ updateForm.product_code }}</span></p>
-          <p class="text-sm text-gray-500">Warehouse: <span class="font-medium text-gray-900">{{ updateForm.warehouse_name }}</span></p>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm text-gray-500">Product: <span class="font-medium text-gray-900">{{ updateForm.product_name }}</span></p>
           <p class="text-sm text-gray-500">Current Quantity: <span class="font-medium text-gray-900">{{ updateForm.current_quantity }}</span></p>
         </div>
         <div>
-          <label class="label">Update Type *</label>
-          <select v-model="updateForm.type" class="input">
-            <option value="insert">Insert (Add to quantity)</option>
-            <option value="update">Update (Replace quantity)</option>
-          </select>
-        </div>
-        <div>
-          <label class="label">Quantity *</label>
-          <input v-model.number="updateForm.quantity" type="number" class="input" required />
+          <label class="label">New Quantity *</label>
+          <input v-model.number="updateForm.quantity" type="number" min="0" class="input" required />
         </div>
       </form>
     </Modal>
@@ -121,7 +115,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { storageService } from '../services/api'
+import { inventoryService, productService } from '../services/api'
 import PageHeader from '../components/PageHeader.vue'
 import Modal from '../components/Modal.vue'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
@@ -129,23 +123,22 @@ import EmptyState from '../components/EmptyState.vue'
 import Toast from '../components/Toast.vue'
 
 const storages = ref([])
+const products = ref([])
 const loading = ref(true)
 const saving = ref(false)
 const showCreateModal = ref(false)
 const showUpdateModal = ref(false)
 
 const createForm = ref({
-  product_code: '',
-  warehouse_name: '',
+  product_id: '',
   quantity: 0
 })
 
 const updateForm = ref({
-  product_code: '',
-  warehouse_name: '',
+  id: null,
+  product_name: '',
   current_quantity: 0,
-  quantity: 0,
-  type: 'insert'
+  quantity: 0
 })
 
 const toast = ref({ show: false, message: '', type: 'success' })
@@ -158,27 +151,36 @@ const showToast = (message, type = 'success') => {
 const fetchStorages = async () => {
   try {
     loading.value = true
-    const response = await storageService.getAll()
-    storages.value = response.data.results || response.data || []
+    const response = await inventoryService.getAll()
+    storages.value = response.data.storages || response.data || []
   } catch (error) {
-    showToast('Failed to load storage records', 'error')
+    showToast('Failed to load inventory', 'error')
   } finally {
     loading.value = false
   }
 }
 
+const loadProducts = async () => {
+  try {
+    const response = await productService.getAll()
+    products.value = response.data.products || response.data || []
+  } catch (error) {
+    console.error('Error loading products:', error)
+  }
+}
+
 const openCreateModal = () => {
-  createForm.value = { product_code: '', warehouse_name: '', quantity: 0 }
+  createForm.value = { product_id: '', quantity: 0 }
   showCreateModal.value = true
+  if (products.value.length === 0) loadProducts()
 }
 
 const openUpdateModal = (storage) => {
   updateForm.value = {
-    product_code: storage.product_code,
-    warehouse_name: storage.warehouse_name,
+    id: storage.id,
+    product_name: storage.product?.name || `Product #${storage.product_id}`,
     current_quantity: storage.quantity,
-    quantity: 0,
-    type: 'insert'
+    quantity: storage.quantity
   }
   showUpdateModal.value = true
 }
@@ -186,12 +188,15 @@ const openUpdateModal = (storage) => {
 const createStorage = async () => {
   try {
     saving.value = true
-    await storageService.create(createForm.value)
-    showToast('Storage record created successfully')
+    await inventoryService.create({
+      product_id: parseInt(createForm.value.product_id),
+      quantity: createForm.value.quantity
+    })
+    showToast('Stock added successfully')
     showCreateModal.value = false
     fetchStorages()
   } catch (error) {
-    showToast(error.response?.data?.message || 'Failed to create storage record', 'error')
+    showToast(error.response?.data?.message || 'Failed to add stock', 'error')
   } finally {
     saving.value = false
   }
@@ -200,17 +205,14 @@ const createStorage = async () => {
 const updateStorage = async () => {
   try {
     saving.value = true
-    await storageService.update(
-      updateForm.value.product_code, 
-      updateForm.value.warehouse_name, 
-      updateForm.value.type,
-      { quantity: updateForm.value.quantity }
-    )
-    showToast('Storage updated successfully')
+    await inventoryService.update(updateForm.value.id, {
+      quantity: updateForm.value.quantity
+    })
+    showToast('Stock updated successfully')
     showUpdateModal.value = false
     fetchStorages()
   } catch (error) {
-    showToast(error.response?.data?.message || 'Failed to update storage', 'error')
+    showToast(error.response?.data?.message || 'Failed to update stock', 'error')
   } finally {
     saving.value = false
   }

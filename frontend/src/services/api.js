@@ -9,73 +9,109 @@ const api = axios.create({
   }
 })
 
+// Request interceptor to add JWT token
+api.interceptors.request.use(
+  (config) => {
+    const token = sessionStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor to handle 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+// Auth Service
+export const authService = {
+  register: (data) => api.post('/auth/register', data),
+  login: async (username, password) => {
+    const response = await api.post('/auth/login', { username, password })
+    if (response.data.token) {
+      sessionStorage.setItem('token', response.data.token)
+      sessionStorage.setItem('user', JSON.stringify(response.data.user))
+    }
+    return response
+  },
+  logout: () => {
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('user')
+  },
+  getCurrentUser: () => {
+    const userStr = sessionStorage.getItem('user')
+    return userStr ? JSON.parse(userStr) : null
+  },
+  isAuthenticated: () => {
+    return !!sessionStorage.getItem('token')
+  }
+}
+
 // Products
 export const productService = {
-  getAll: (start = 1, limit = 100) => api.get('/products', { params: { start, limit } }),
-  getOne: (productCode) => api.get(`/product/${productCode}`),
+  getAll: (start = 0, limit = 50) => api.get('/products', { params: { start, limit } }),
+  getOne: (id) => api.get(`/products/${id}`),
   create: (data) => api.post('/products', data),
-  update: (productCode, data) => api.put(`/product/${productCode}`, data),
-  delete: (productCode) => api.delete(`/product/${productCode}`)
+  update: (id, data) => api.put(`/products/${id}`, data),
+  delete: (id) => api.delete(`/products/${id}`)
 }
 
 // Suppliers
 export const supplierService = {
-  getAll: (start = 1, limit = 100) => api.get('/suppliers', { params: { start, limit } }),
-  getOne: (id) => api.get(`/supplier/${id}`),
+  getAll: (start = 0, limit = 50) => api.get('/suppliers', { params: { start, limit } }),
+  getOne: (id) => api.get(`/suppliers/${id}`),
   create: (data) => api.post('/suppliers', data),
-  update: (id, data) => api.put(`/supplier/${id}`, data),
-  delete: (id) => api.delete(`/supplier/${id}`),
-  getByCity: (city) => api.get(`/suppliers/${city}`),
-  getProducts: (id) => api.get(`/supplier/${id}/products`)
+  update: (id, data) => api.put(`/suppliers/${id}`, data),
+  delete: (id) => api.delete(`/suppliers/${id}`),
+  getByCity: (city) => api.get(`/suppliers/city/${city}`)
 }
 
 // Customers
 export const customerService = {
-  getAll: (start = 1, limit = 100) => api.get('/customers', { params: { start, limit } }),
-  getOne: (id) => api.get(`/customer/${id}`),
+  getAll: (start = 0, limit = 50) => api.get('/customers', { params: { start, limit } }),
+  getOne: (id) => api.get(`/customers/${id}`),
   create: (data) => api.post('/customers', data),
-  update: (id, data) => api.put(`/customer/${id}`, data),
-  delete: (id) => api.delete(`/customer/${id}`),
-  getByCity: (city) => api.get(`/customers/${city}`)
+  update: (id, data) => api.put(`/customers/${id}`, data),
+  delete: (id) => api.delete(`/customers/${id}`),
+  getByCity: (city) => api.get(`/customers/city/${city}`)
 }
 
-// Warehouses
-export const warehouseService = {
-  getAll: (start = 1, limit = 100) => api.get('/warehouses', { params: { start, limit } }),
-  getOne: (id) => api.get(`/warehouse/${id}`),
-  create: (data) => api.post('/warehouses', data),
-  update: (id, data) => api.put(`/warehouse/${id}`, data),
-  delete: (id) => api.delete(`/warehouse/${id}`),
-  getByCity: (city) => api.get(`/warehouses/${city}`),
-  getCustomers: (id) => api.get(`/warehouse/${id}/customers`)
-}
-
-// Storages
-export const storageService = {
-  getAll: (start = 1, limit = 100) => api.get('/storages', { params: { start, limit } }),
-  getOne: (productCode, warehouseName) => api.get(`/storage/${productCode}/${warehouseName}`),
+// Inventory/Storage
+export const inventoryService = {
+  getAll: (start = 0, limit = 50) => api.get('/storages', { params: { start, limit } }),
+  getOne: (id) => api.get(`/storages/${id}`),
   create: (data) => api.post('/storages', data),
-  update: (productCode, warehouseName, type, data) => api.put(`/storage/${productCode}/${warehouseName}/${type}`, data),
-  getByProduct: (productCode) => api.get(`/storages/product/${productCode}`),
-  getByWarehouse: (warehouseName) => api.get(`/storages/warehouse/${warehouseName}`)
+  update: (id, data) => api.put(`/storages/${id}`, data),
+  getByProduct: (productId) => api.get(`/storages/product/${productId}`)
 }
 
-// Supply Transactions
-export const supplyTransactionService = {
-  getAll: (start = 1, limit = 100) => api.get('/supplytransactions', { params: { start, limit } }),
-  create: (data) => api.post('/supplytransactions', data),
-  getByProduct: (productCode) => api.get(`/supplytransactions/product/${productCode}`),
-  getBySupplier: (supplierName) => api.get(`/supplytransactions/supplier/${supplierName}`),
-  getByProductAndSupplier: (productCode, supplierName) => api.get(`/supplytransactions/product_supplier/${productCode}/${supplierName}`)
+// Procurement (Supply Transactions)
+export const procurementService = {
+  getAll: (start = 0, limit = 50) => api.get('/procurements', { params: { start, limit } }),
+  create: (data) => api.post('/procurements', data),
+  getByProduct: (productId) => api.get(`/procurements/product/${productId}`),
+  getBySupplier: (supplierId) => api.get(`/procurements/supplier/${supplierId}`)
 }
 
-// Customer Transactions
-export const customerTransactionService = {
-  getAll: (start = 1, limit = 100) => api.get('/customertransactions', { params: { start, limit } }),
-  create: (data) => api.post('/customertransactions', data),
-  getByProduct: (productCode) => api.get(`/customertransactions/product/${productCode}`),
-  getByCustomer: (customerName) => api.get(`/customertransactions/customer/${customerName}`),
-  getByProductAndCustomer: (productCode, customerName) => api.get(`/customertransactions/product_customer/${productCode}/${customerName}`)
+// Orders (Customer Transactions)
+export const orderService = {
+  getAll: (start = 0, limit = 50) => api.get('/orders', { params: { start, limit } }),
+  create: (data) => api.post('/orders', data),
+  getByProduct: (productId) => api.get(`/orders/product/${productId}`),
+  getByCustomer: (customerId) => api.get(`/orders/customer/${customerId}`)
 }
 
 export default api
