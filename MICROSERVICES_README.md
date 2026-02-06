@@ -2,6 +2,8 @@
 
 A complete microservices-based inventory management system built with Flask, FastAPI, Vue 3, Redis, and MySQL.
 
+![Architecture Diagram](inventory.png)
+
 ## Architecture Overview
 
 The system consists of 7 independent microservices communicating via Redis pub/sub for eventual consistency:
@@ -9,8 +11,8 @@ The system consists of 7 independent microservices communicating via Redis pub/s
 1. **Auth Service** (Port 5003) - JWT authentication with 6-hour token expiry
 2. **Supplier Service** (Port 5004) - Supplier CRUD operations
 3. **Customer Service** (Port 5005) - Customer CRUD operations  
-4. **Product Service** (Port 5000) - Product management with supplier relationships
-5. **Inventory Service** (Port 5006) - Stock management (storages table)
+4. **Product Service** (Port 5000) - Product management with supplier relationships and cache updates
+5. **Inventory Service** (Port 5006) - Stock management via `/inventory` endpoints
 6. **Procurement Service** (Port 5001) - Purchase orders from suppliers
 7. **Order Service** (Port 5002) - Sales orders to customers
 
@@ -32,7 +34,7 @@ The system consists of 7 independent microservices communicating via Redis pub/s
 users (id, username, email, password_hash, created_at)
 suppliers (id, name, city, address, contact_person)
 customers (id, name, city, address, contact_person)
-products (id, code, name, category, price_buy, price_sell, measure_unit, supplier_id)
+products (id, product_code, name, category, price_buy, price_sell, measure_unit, supplier_id)
 storages (id, product_id, quantity)
 
 -- Transactions (normalized + denormalized for historical accuracy)
@@ -132,7 +134,7 @@ POST /api/auth/login
 GET /api/products?start=0&limit=50
 POST /api/products
 {
-  "code": "P001",
+  "product_code": "P001",
   "name": "Product Name",
   "category": "Electronics",
   "price_buy": 100.00,
@@ -141,7 +143,7 @@ POST /api/products
   "supplier_id": 1
 }
 GET /api/products/{id}
-PUT /api/products/{id}
+PUT /api/products/{id}  # Updates cache automatically
 DELETE /api/products/{id}
 ```
 
@@ -182,15 +184,15 @@ GET /api/customers/city/{city}
 ### Inventory (Protected)
 
 ```bash
-GET /api/storages?start=0&limit=50
-POST /api/storages
+GET /api/inventory?start=0&limit=50
+POST /api/inventory
 {
   "product_id": 1,
   "quantity": 100
 }
-GET /api/storages/{id}
-PUT /api/storages/{id}
-GET /api/storages/product/{product_id}
+GET /api/inventory/{id}
+PUT /api/inventory/{id}
+GET /api/inventory/product/{product_id}
 ```
 
 ### Procurements (Protected)
@@ -208,10 +210,6 @@ POST /api/procurements
 
 GET /api/procurements/product/{product_id}
 GET /api/procurements/supplier/{supplier_id}
-
-# Backward compatible endpoints
-GET /api/supplytransactions (alias for /api/procurements)
-POST /api/supplytransactions (alias for /api/procurements)
 ```
 
 ### Orders (Protected)
@@ -229,10 +227,6 @@ POST /api/orders
 
 GET /api/orders/product/{product_id}
 GET /api/orders/customer/{customer_id}
-
-# Backward compatible endpoints
-GET /api/customertransactions (alias for /api/orders)
-POST /api/customertransactions (alias for /api/orders)
 ```
 
 ## Development
@@ -280,7 +274,7 @@ frontend/src/
 │   ├── ProductsView.vue
 │   ├── SuppliersView.vue
 │   ├── CustomersView.vue
-│   ├── StoragesView.vue
+│   ├── StoragesView.vue    # Uses /inventory API endpoints
 │   ├── ProcurementsView.vue
 │   └── OrdersView.vue
 └── components/
@@ -315,9 +309,9 @@ curl http://localhost:8000/health  # API Gateway
 4. **Create Product**: POST /api/products (with supplier_id)
 5. **Create Customer**: POST /api/customers
 6. **Create Procurement**: POST /api/procurements (stock increases automatically)
-7. **Check Inventory**: GET /api/storages
+7. **Check Inventory**: GET /api/inventory
 8. **Create Order**: POST /api/orders (stock decreases automatically)
-9. **Verify Stock Updated**: GET /api/storages/product/{id}
+9. **Verify Stock Updated**: GET /api/inventory/product/{id}
 
 ### Monitoring Events
 
@@ -327,6 +321,15 @@ Watch Redis pub/sub in real-time:
 docker exec -it redis_queue redis-cli
 > SUBSCRIBE supplier_events customer_events product_events procurement_stock_in order_stock_out inventory_alert
 ```
+
+## Recent Updates
+
+### Cache Update Fix (February 2026)
+
+Fixed a critical bug in the Product service where cache was not being updated after product updates. The `update_product` endpoint now properly:
+- Updates cached product data with `cache_entity()` after database commit
+- Invalidates list cache with `invalidate_list_cache()` to ensure query consistency
+- This fix ensures price updates and other product modifications are immediately reflected across the system
 
 ## Troubleshooting
 

@@ -129,13 +129,15 @@ def create_procurement():
         if not supplier or not product:
             return jsonify({"error": "Invalid supplier_id or product_id"}), 400
 
+        quantity = data.get("quantity", 0)
+        unit_price = product.get("price_buy", 0)
+
         # Create normalized procurement record
         transaction = Procurements(
             supplier_id=data["supplier_id"],
             product_id=data["product_id"],
-            unit_price=data.get("unit_price"),
-            quantity=data.get("quantity"),
-            total_cost=data.get("quantity", 0) * data.get("unit_price", 0),
+            quantity=quantity,
+            total_cost=quantity * unit_price,
         )
 
         db.session.add(transaction)

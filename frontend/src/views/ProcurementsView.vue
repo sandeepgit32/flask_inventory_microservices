@@ -111,16 +111,18 @@
               />
             </div>
             <div>
-              <label class="label">Unit Price *</label>
+              <label class="label">Unit Price (from Product)</label>
               <input 
                 v-model.number="form.unit_price" 
                 type="number" 
                 step="0.01" 
                 min="0.01" 
-                class="input" 
-                required
-                @input="calculateTotal"
+                class="input bg-gray-50" 
+                readonly
+                disabled
+                placeholder="Select a product first"
               />
+              <p class="text-xs text-gray-500 mt-1">Price is automatically set from the product's buying price</p>
             </div>
           </div>
           <div class="mt-4">
@@ -224,7 +226,11 @@ export default {
     }
 
     const onProductChange = () => {
-      // Could auto-fill unit price from product if available
+      // Auto-fill unit price from selected product's buying price
+      const selectedProduct = products.value.find(p => p.id === parseInt(form.value.product_id))
+      if (selectedProduct && selectedProduct.price_buy) {
+        form.value.unit_price = selectedProduct.price_buy
+      }
     }
 
     const createProcurement = async () => {
@@ -233,8 +239,7 @@ export default {
         await procurementService.create({
           supplier_id: parseInt(form.value.supplier_id),
           product_id: parseInt(form.value.product_id),
-          quantity: form.value.quantity,
-          unit_price: form.value.unit_price
+          quantity: form.value.quantity
         })
         closeModal()
         loadProcurements()

@@ -95,7 +95,6 @@ CREATE TABLE IF NOT EXISTS procurements (
     supplier_id INT,
     product_id INT,
     
-    unit_price FLOAT,
     quantity INT,
     total_cost FLOAT,
     
@@ -118,7 +117,6 @@ CREATE TABLE IF NOT EXISTS orders (
     customer_id INT,
     product_id INT,
     
-    unit_price FLOAT,
     quantity INT,
     total_cost FLOAT,
     

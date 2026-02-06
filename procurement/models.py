@@ -13,7 +13,6 @@ class Procurements(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=True, index=True)
     
     # Transaction data
-    unit_price = db.Column(db.Float)
     quantity = db.Column(db.Integer)
     total_cost = db.Column(db.Float)
     
@@ -23,10 +22,13 @@ class Procurements(db.Model):
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
             'supplier_id': self.supplier_id,
             'product_id': self.product_id,
-            'unit_price': self.unit_price,
             'quantity': self.quantity,
             'total_cost': self.total_cost
         }
+        
+        # Get unit_price from product data if available
+        if product_data and 'price_buy' in product_data:
+            data['unit_price'] = product_data['price_buy']
         
         if include_relations:
             if supplier_data:

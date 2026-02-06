@@ -117,6 +117,8 @@ def update_product(product_id):
         if 'supplier_id' in data:
             product.supplier_id = data['supplier_id']
         db.session.commit()
+        cache_entity('product', product.id, product.to_dict(), ttl=86400)
+        invalidate_list_cache('product')
         event_publisher = getattr(current_app, 'event_publisher', None)
         if event_publisher:
             event_publisher.publish('product_events', 'updated', product.id, product.to_dict())

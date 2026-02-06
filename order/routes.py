@@ -124,13 +124,15 @@ def create_order():
         if not customer or not product:
             return jsonify({'error': 'Invalid customer_id or product_id'}), 400
         
+        quantity = data.get('quantity', 0)
+        unit_price = product.get('price_sell', 0)
+        
         # Create normalized transaction (store foreign keys only)
         transaction = Orders(
             customer_id=data['customer_id'],
             product_id=data['product_id'],
-            unit_price=data.get('unit_price'),
-            quantity=data.get('quantity'),
-            total_cost=(data.get('quantity', 0) * data.get('unit_price', 0))
+            quantity=quantity,
+            total_cost=quantity * unit_price
         )
         
         db.session.add(transaction)
