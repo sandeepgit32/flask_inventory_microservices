@@ -34,29 +34,28 @@ client = httpx.AsyncClient(timeout=30.0)
 
 async def verify_token(authorization: Optional[str] = Header(None)):
     """JWT token verification middleware"""
-    # Skip auth for public endpoints
     if not authorization:
-        return None
+        raise HTTPException(status_code=401, detail="Missing authorization header")
     
     if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
+        raise HTTPException(status_code=401, detail="Invalid authorization header format")
     
     token = authorization.split(" ")[1]
     
     try:
         # Validate token with auth service
-        response = await client.post(
-            f"{AUTH_SERVICE_URL}/auth/validate",
-            json={"token": token},
-            timeout=5.0
-        )
+        async with httpx.AsyncClient(timeout=5.0) as temp_client:
+            response = await temp_client.post(
+                f"{AUTH_SERVICE_URL}/auth/validate",
+                json={"token": token}
+            )
         
         if response.status_code == 200:
             result = response.json()
             if result.get("valid"):
                 return result.get("payload")
         
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        raise HTTPException(status_code=401, detail="Invalid token")
         
     except httpx.RequestError as e:
         raise HTTPException(status_code=503, detail=f"Auth service unavailable: {str(e)}")
@@ -66,7 +65,7 @@ async def proxy_request(service_url: str, path: str, request: Request, params: d
     """Generic proxy function to forward requests to microservices"""
     url = f"{service_url}{path}"
     
-    # Forward Authorization header if present
+    # Forward headers
     headers = {}
     if "authorization" in request.headers:
         headers["Authorization"] = request.headers["authorization"]
@@ -75,17 +74,30 @@ async def proxy_request(service_url: str, path: str, request: Request, params: d
         if request.method == "GET":
             response = await client.get(url, params=params, headers=headers)
         elif request.method == "POST":
-            body = await request.json()
+            # Handle empty body
+            try:
+                body = await request.json()
+            except:
+                body = None
             response = await client.post(url, json=body, params=params, headers=headers)
         elif request.method == "PUT":
-            body = await request.json()
+            try:
+                body = await request.json()
+            except:
+                body = None
             response = await client.put(url, json=body, params=params, headers=headers)
         elif request.method == "DELETE":
             response = await client.delete(url, params=params, headers=headers)
         else:
             raise HTTPException(status_code=405, detail="Method not allowed")
         
-        return JSONResponse(content=response.json(), status_code=response.status_code)
+        # Handle non-JSON responses gracefully
+        try:
+            content = response.json()
+        except:
+            content = {"message": response.text}
+            
+        return JSONResponse(content=content, status_code=response.status_code)
     except httpx.RequestError as e:
         raise HTTPException(status_code=503, detail=f"Service unavailable: {str(e)}")
 
@@ -186,79 +198,60 @@ async def get_customers_by_city(city: str, request: Request, user=Depends(verify
 
 # ==================== Inventory Endpoints ====================
 @app.get("/api/inventory")
-@app.get("/api/storages")
 async def get_inventory(request: Request, start: Optional[int] = 0, limit: Optional[int] = 50, user=Depends(verify_token)):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/storages", request, {"start": start, "limit": limit})
+    return await proxy_request(INVENTORY_SERVICE_URL, "/inventory", request, {"start": start, "limit": limit})
 
 @app.post("/api/inventory")
-@app.post("/api/storages")
 async def create_storage(request: Request, user=Depends(verify_token)):
-    return await proxy_request(INVENTORY_SERVICE_URL, "/storages", request)
+    return await proxy_request(INVENTORY_SERVICE_URL, "/inventory", request)
 
 @app.get("/api/inventory/{storage_id}")
-@app.get("/api/storages/{storage_id}")
 async def get_storage(storage_id: int, request: Request, user=Depends(verify_token)):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/storages/{storage_id}", request)
+    return await proxy_request(INVENTORY_SERVICE_URL, f"/inventory/{storage_id}", request)
 
 @app.put("/api/inventory/{storage_id}")
-@app.put("/api/storages/{storage_id}")
 async def update_storage(storage_id: int, request: Request, user=Depends(verify_token)):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/storages/{storage_id}", request)
+    return await proxy_request(INVENTORY_SERVICE_URL, f"/inventory/{storage_id}", request)
 
 @app.get("/api/inventory/product/{product_id}")
-@app.get("/api/storages/product/{product_id}")
 async def get_storage_by_product(product_id: int, request: Request, user=Depends(verify_token)):
-    return await proxy_request(INVENTORY_SERVICE_URL, f"/storages/product/{product_id}", request)
+    return await proxy_request(INVENTORY_SERVICE_URL, f"/inventory/product/{product_id}", request)
 
 
 # ==================== Procurement Endpoints ====================
 @app.get("/api/procurements")
-@app.get("/api/supplytransactions")
 async def get_procurements(request: Request, start: Optional[int] = 0, limit: Optional[int] = 50, user=Depends(verify_token)):
     return await proxy_request(PROCUREMENT_SERVICE_URL, "/procurements", request, {"start": start, "limit": limit})
 
 @app.post("/api/procurements")
-@app.post("/api/supplytransactions")
 async def create_procurement(request: Request, user=Depends(verify_token)):
     return await proxy_request(PROCUREMENT_SERVICE_URL, "/procurements", request)
 
 @app.get("/api/procurements/product/{product_id}")
-@app.get("/api/supplytransactions/product/{product_id}")
 async def get_procurements_by_product(product_id: int, request: Request, user=Depends(verify_token)):
     return await proxy_request(PROCUREMENT_SERVICE_URL, f"/procurements/product/{product_id}", request)
 
 @app.get("/api/procurements/supplier/{supplier_id}")
-@app.get("/api/supplytransactions/supplier/{supplier_id}")
 async def get_procurements_by_supplier(supplier_id: int, request: Request, user=Depends(verify_token)):
     return await proxy_request(PROCUREMENT_SERVICE_URL, f"/procurements/supplier/{supplier_id}", request)
 
 
 # ==================== Order Endpoints ====================
 @app.get("/api/orders")
-@app.get("/api/customertransactions")
 async def get_orders(request: Request, start: Optional[int] = 0, limit: Optional[int] = 50, user=Depends(verify_token)):
     return await proxy_request(ORDER_SERVICE_URL, "/orders", request, {"start": start, "limit": limit})
 
 @app.post("/api/orders")
-@app.post("/api/customertransactions")
 async def create_order(request: Request, user=Depends(verify_token)):
     return await proxy_request(ORDER_SERVICE_URL, "/orders", request)
 
 @app.get("/api/orders/product/{product_id}")
-@app.get("/api/customertransactions/product/{product_id}")
 async def get_orders_by_product(product_id: int, request: Request, user=Depends(verify_token)):
     return await proxy_request(ORDER_SERVICE_URL, f"/orders/product/{product_id}", request)
 
 @app.get("/api/orders/customer/{customer_id}")
-@app.get("/api/customertransactions/customer/{customer_id}")
 async def get_orders_by_customer(customer_id: int, request: Request, user=Depends(verify_token)):
     return await proxy_request(ORDER_SERVICE_URL, f"/orders/customer/{customer_id}", request)
-
-
-# Health check endpoint
-@app.get("/health")
-async def health():
-    return {"status": "healthy", "service": "api_gateway"}
 
 
 # Cleanup on shutdown

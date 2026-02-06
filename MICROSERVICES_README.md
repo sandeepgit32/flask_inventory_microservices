@@ -36,9 +36,9 @@ products (id, code, name, category, price_buy, price_sell, measure_unit, supplie
 storages (id, product_id, quantity)
 
 -- Transactions (normalized + denormalized for historical accuracy)
-supply_transactions (id, supplier_id, product_id, quantity, unit_price, total_cost, timestamp, 
+procurements (id, supplier_id, product_id, quantity, unit_price, total_cost, timestamp, 
                      supplier_name, product_code, product_name, ...)
-customer_transactions (id, customer_id, product_id, quantity, unit_price, total_amount, timestamp,
+orders (id, customer_id, product_id, quantity, unit_price, total_cost, timestamp,
                        customer_name, product_code, product_name, ...)
 ```
 

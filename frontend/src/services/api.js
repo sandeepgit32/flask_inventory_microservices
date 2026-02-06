@@ -91,11 +91,11 @@ export const customerService = {
 
 // Inventory/Storage
 export const inventoryService = {
-  getAll: (start = 0, limit = 50) => api.get('/storages', { params: { start, limit } }),
-  getOne: (id) => api.get(`/storages/${id}`),
-  create: (data) => api.post('/storages', data),
-  update: (id, data) => api.put(`/storages/${id}`, data),
-  getByProduct: (productId) => api.get(`/storages/product/${productId}`)
+  getAll: (start = 0, limit = 50) => api.get('/inventory', { params: { start, limit } }),
+  getOne: (id) => api.get(`/inventory/${id}`),
+  create: (data) => api.post('/inventory', data),
+  update: (id, data) => api.put(`/inventory/${id}`, data),
+  getByProduct: (productId) => api.get(`/inventory/product/${productId}`)
 }
 
 // Procurement (Supply Transactions)

@@ -1,21 +1,26 @@
-import sys
-import os
 import logging
+import os
 import signal
-import json
+import sys
+
 import requests
-from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import Config
 from db import db
-from models import SupplyTransaction
-from message_queue.event_system import EventPublisher, EventConsumerProcess
-from message_queue.cache import (warm_cache_sync, cache_entity, get_cached_entity,
-                                  cache_list, get_cached_list)
+from models import Procurements
+
+from message_queue.cache import (
+    cache_entity,
+    cache_list,
+    get_cached_entity,
+    get_cached_list,
+    warm_cache_sync,
+)
 from message_queue.circuit_breaker import CircuitBreaker
+from message_queue.event_system import EventConsumerProcess, EventPublisher
 from message_queue.supervisor import MultiProcessSupervisor
 
 logging.basicConfig(
@@ -59,184 +64,22 @@ def create_app():
     flask_app = Flask(__name__)
     flask_app.config.from_object(Config)
     db.init_app(flask_app)
-    register_routes(flask_app)
+    # Attach shared runtime objects so routes and other parts can access them via current_app
+    flask_app.supplier_breaker = supplier_breaker
+    flask_app.product_breaker = product_breaker
+    flask_app.cache_warmed = False
+    # Register blueprint containing routes
+    from routes import bp as procurement_bp
+    flask_app.register_blueprint(procurement_bp)
     return flask_app
 
 
-def register_routes(app):
-    """Register all routes on the Flask app"""
+# Routes moved to `procurement/routes.py` using a Flask Blueprint
+# See `procurement/routes.py` for all route handlers
 
-    @app.route('/health', methods=['GET'])
-    def health_check():
-        consumer_running = supervisor and len(supervisor.supervisors) > 0
-        return jsonify({
-            'status': 'healthy',
-            'service': Config.SERVICE_NAME,
-            'cache_warmed': cache_warmed,
-            'consumer_running': consumer_running,
-            'supplier_breaker': supplier_breaker.get_state(),
-            'product_breaker': product_breaker.get_state()
-        }), 200
-
-    @app.route('/procurements', methods=['GET'])
-    @app.route('/supplytransactions', methods=['GET'])
-    def get_procurements():
-        try:
-            start = request.args.get('start', 0, type=int)
-            limit = request.args.get('limit', 50, type=int)
-            
-            # Check cache first
-            cache_key = f"page_{start}_limit_{limit}"
-            cached = get_cached_list('procurement', cache_key)
-            if cached:
-                return jsonify({
-                    'procurements': cached,
-                    'start': start,
-                    'limit': limit,
-                    'count': len(cached),
-                    'cached': True
-                }), 200
-            
-            transactions = SupplyTransaction.query.offset(start).limit(limit).all()
-            
-            # Enrich with supplier and product data
-            result = []
-            for t in transactions:
-                tx_dict = t.to_dict()
-                
-                if t.supplier_id:
-                    supplier = fetch_entity_with_breaker(
-                        'supplier', t.supplier_id, 
-                        Config.SUPPLIER_SERVICE_URL, supplier_breaker
-                    )
-                    if supplier:
-                        tx_dict['supplier'] = supplier
-                
-                if t.product_id:
-                    product = fetch_entity_with_breaker(
-                        'product', t.product_id,
-                        Config.PRODUCT_SERVICE_URL, product_breaker
-                    )
-                    if product:
-                        tx_dict['product'] = product
-                
-                # Cache individual enriched record
-                cache_entity('procurement', t.id, tx_dict, ttl=3600)
-                result.append(tx_dict)
-            
-            # Cache the list
-            cache_list('procurement', cache_key, result, ttl=3600)
-            
-            return jsonify({
-                'procurements': result,
-                'start': start,
-                'limit': limit,
-                'count': len(result)
-            }), 200
-        except Exception as e:
-            logger.error(f"Error getting procurements: {e}")
-            return jsonify({'error': 'Failed to fetch procurements'}), 500
-
-    @app.route('/procurements', methods=['POST'])
-    @app.route('/supplytransactions', methods=['POST'])
-    def create_procurement():
-        try:
-            data = request.get_json()
-            
-            if not data.get('supplier_id') or not data.get('product_id'):
-                return jsonify({'error': 'supplier_id and product_id are required'}), 400
-            
-            # Fetch supplier and product data for denormalization
-            supplier = fetch_entity_with_breaker(
-                'supplier', data['supplier_id'],
-                Config.SUPPLIER_SERVICE_URL, supplier_breaker
-            )
-            product = fetch_entity_with_breaker(
-                'product', data['product_id'],
-                Config.PRODUCT_SERVICE_URL, product_breaker
-            )
-            
-            if not supplier or not product:
-                return jsonify({'error': 'Invalid supplier_id or product_id'}), 400
-            
-            # Create transaction with denormalized data
-            transaction = SupplyTransaction(
-                supplier_id=data['supplier_id'],
-                product_id=data['product_id'],
-                supplier_name=supplier.get('name'),
-                city=supplier.get('city'),
-                zipcode=supplier.get('zipcode'),
-                contact_person=supplier.get('contact_person'),
-                phone=supplier.get('phone'),
-                email=supplier.get('email'),
-                product_code=product.get('product_code'),
-                product_name=product.get('name'),
-                product_category=product.get('category'),
-                unit_price=data.get('unit_price'),
-                quantity=data.get('quantity'),
-                total_cost=data.get('quantity', 0) * data.get('unit_price', 0),
-                measure_unit=product.get('measure_unit')
-            )
-            
-            db.session.add(transaction)
-            db.session.commit()
-            
-            # Publish stock-in event to inventory service
-            if event_publisher:
-                event_publisher.publish(
-                    'procurement_stock_in',
-                    'stock_in',
-                    transaction.id,
-                    {
-                        'product_id': transaction.product_id,
-                        'quantity': transaction.quantity
-                    }
-                )
-            
-            logger.info(f"Procurement created: ID {transaction.id}, product {transaction.product_id}, qty {transaction.quantity}")
-            
-            return jsonify(transaction.to_dict(
-                include_relations=True,
-                supplier_data=supplier,
-                product_data=product
-            )), 201
-            
-        except Exception as e:
-            logger.error(f"Error creating procurement: {e}")
-            db.session.rollback()
-            return jsonify({'error': 'Failed to create procurement'}), 500
-
-    @app.route('/procurements/product/<int:product_id>', methods=['GET'])
-    @app.route('/supplytransactions/product/<int:product_id>', methods=['GET'])
-    def get_procurements_by_product(product_id):
-        try:
-            transactions = SupplyTransaction.query.filter_by(product_id=product_id).all()
-            return jsonify({
-                'procurements': [t.to_dict() for t in transactions],
-                'product_id': product_id,
-                'count': len(transactions)
-            }), 200
-        except Exception as e:
-            logger.error(f"Error getting procurements by product: {e}")
-            return jsonify({'error': 'Failed to fetch procurements'}), 500
-
-    @app.route('/procurements/supplier/<int:supplier_id>', methods=['GET'])
-    @app.route('/supplytransactions/supplier/<int:supplier_id>', methods=['GET'])
-    def get_procurements_by_supplier(supplier_id):
-        try:
-            transactions = SupplyTransaction.query.filter_by(supplier_id=supplier_id).all()
-            return jsonify({
-                'procurements': [t.to_dict() for t in transactions],
-                'supplier_id': supplier_id,
-                'count': len(transactions)
-            }), 200
-        except Exception as e:
-            logger.error(f"Error getting procurements by supplier: {e}")
-            return jsonify({'error': 'Failed to fetch procurements'}), 500
 
 
 def warm_cache(app):
-    global cache_warmed
     try:
         with app.app_context():
             logger.info("Starting cache warming for procurement...")
@@ -261,32 +104,14 @@ def warm_cache(app):
             except Exception as e:
                 logger.warning(f"Could not warm product cache: {e}")
             
-            cache_warmed = True
+            app.cache_warmed = True
             logger.info("Cache warming complete")
     except Exception as e:
         logger.error(f"Failed to warm cache: {e}")
 
 
-def fetch_entity_with_breaker(entity_type, entity_id, service_url, breaker):
-    """Fetch entity from cache or service with circuit breaker"""
-    cached = get_cached_entity(entity_type, entity_id)
-    if cached:
-        return cached
-    
-    def fetch():
-        response = requests.get(f"{service_url}/{entity_type}s/{entity_id}", timeout=5)
-        if response.status_code == 200:
-            return response.json()
-        return None
-    
-    try:
-        entity = breaker.call(fetch)
-        if entity:
-            cache_entity(entity_type, entity_id, entity, ttl=86400)
-        return entity
-    except Exception as e:
-        logger.error(f"Failed to fetch {entity_type} {entity_id}: {e}")
-        return None
+# fetch_entity_with_breaker moved to `procurement/routes.py`
+
 
 
 def shutdown_handler(signum, frame):
@@ -306,8 +131,12 @@ def main():
     warm_cache(app)
     
     event_publisher = EventPublisher()
-    
+    # expose to routes via current_app
+    app.event_publisher = event_publisher
+
     supervisor = MultiProcessSupervisor()
+    # expose supervisor to routes and health checks
+    app.supervisor = supervisor
     supervisor.add_process(
         lambda: ProcurementEventConsumer(),
         max_retries=3,

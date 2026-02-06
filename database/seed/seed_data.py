@@ -313,8 +313,8 @@ def clear_tables(cursor):
     cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
     
     tables = [
-        "customer_transactions",
-        "supply_transactions", 
+        "orders",
+        "procurements", 
         "storages",
         "products",
         "customers",
@@ -385,14 +385,13 @@ def seed_storages(cursor):
     print(f"  ✓ Inserted {len(STORAGES)} storage records")
 
 
-def seed_supply_transactions(cursor, num_transactions=20):
-    """Insert supply transaction data using Faker."""
-    print(f"\n📥 Seeding supply transactions ({num_transactions} records)...")
+def seed_procurements(cursor, num_transactions=20):
+    """Insert procurement data using Faker."""
+    print(f"\n📥 Seeding procurements ({num_transactions} records)...")
     
-    sql = """INSERT INTO supply_transactions 
-             (timestamp, supplier_name, city, zipcode, contact_person, phone, email,
-              product_code, product_name, product_category, unit_price, quantity, total_cost, measure_unit) 
-             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    sql = """INSERT INTO procurements 
+             (timestamp, supplier_id, product_id, unit_price, quantity, total_cost) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
     
     # Create a mapping of supplier to their products
     supplier_products = {}
@@ -413,7 +412,20 @@ def seed_supply_transactions(cursor, num_transactions=20):
             
         product = random.choice(products_for_supplier)
         quantity = random.randint(5, 50)
-        unit_price = product['price_buy']
+        
+        # Lookup supplier_id and product_id in DB
+        cursor.execute("SELECT id FROM suppliers WHERE name=%s LIMIT 1", (supplier['name'],))
+        sup_row = cursor.fetchone()
+        if not sup_row:
+            continue
+        supplier_id = sup_row[0]
+
+        cursor.execute("SELECT id, price_buy FROM products WHERE product_code=%s LIMIT 1", (product['product_code'],))
+        prod_row = cursor.fetchone()
+        if not prod_row:
+            continue
+        product_id, unit_price = prod_row
+
         total_cost = unit_price * quantity
         
         # Random date in the last 6 months
@@ -422,71 +434,56 @@ def seed_supply_transactions(cursor, num_transactions=20):
         
         cursor.execute(sql, (
             transaction_date.strftime('%Y-%m-%d'),
-            supplier['name'],
-            supplier['city'],
-            supplier['zipcode'],
-            supplier['contact_person'],
-            supplier['phone'],
-            supplier['email'],
-            product['product_code'],
-            product['name'],
-            product['category'],
+            supplier_id,
+            product_id,
             unit_price,
             quantity,
-            total_cost,
-            product['measure_unit']
+            total_cost
         ))
         count += 1
     
-    print(f"  ✓ Inserted {count} supply transactions")
+    print(f"  ✓ Inserted {count} procurements")
 
 
-def seed_customer_transactions(cursor, num_transactions=30):
-    """Insert customer transaction data using Faker."""
-    print(f"\n📤 Seeding customer transactions ({num_transactions} records)...")
+def seed_orders(cursor, num_orders=30):
+    """Insert order data using Faker."""
+    print(f"\n📤 Seeding orders ({num_orders} records)...")
     
-    sql = """INSERT INTO customer_transactions 
-             (timestamp, customer_name, city, zipcode, contact_person, phone, email,
-              product_code, product_name, product_category, unit_price, quantity, total_cost, measure_unit) 
-             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    sql = """INSERT INTO orders 
+             (timestamp, customer_id, product_id, unit_price, quantity, total_cost) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
     
     count = 0
-    for _ in range(num_transactions):
-        customer = random.choice(CUSTOMERS)
-        product = random.choice(PRODUCTS)
+    for _ in range(num_orders):
+        # Pick a random existing customer id
+        cursor.execute("SELECT id FROM customers ORDER BY RAND() LIMIT 1")
+        cid_row = cursor.fetchone()
+        customer_id = cid_row[0] if cid_row else None
+
+        # Pick a random existing product id and its price
+        cursor.execute("SELECT id, price_sell FROM products ORDER BY RAND() LIMIT 1")
+        pid_row = cursor.fetchone()
+        product_id = pid_row[0] if pid_row else None
+        unit_price = pid_row[1] if pid_row and len(pid_row) > 1 else 0
+
         quantity = random.randint(1, 10)
-        unit_price = product['price_sell']
         total_cost = unit_price * quantity
-        
+
         # Random date in the last 6 months
         days_ago = random.randint(1, 180)
         transaction_date = datetime.now() - timedelta(days=days_ago)
-        
-        # Convert zipcode to int (handle string zipcodes)
-        try:
-            zipcode = int(customer['zipcode'].replace('-', '').replace(' ', '')[:6])
-        except ValueError:
-            zipcode = 0
-        
+
         cursor.execute(sql, (
             transaction_date.strftime('%Y-%m-%d'),
-            customer['name'],
-            customer['city'],
-            zipcode,
-            customer['contact_person'],
-            customer['phone'],
-            customer['email'],
-            product['product_code'],
-            product['name'],
-            product['category'],
+            customer_id,
+            product_id,
             unit_price,
             quantity,
-            total_cost,
-            product['measure_unit']
+            total_cost
         ))
         count += 1
     
-    print(f"  ✓ Inserted {count} customer transactions")
+    print(f"  ✓ Inserted {count} orders")
 
 
 def generate_additional_fake_data(cursor, num_customers=10, num_suppliers=5):
@@ -558,10 +555,10 @@ Examples:
                         help='Number of additional fake customers to generate')
     parser.add_argument('--extra-suppliers', type=int, default=0,
                         help='Number of additional fake suppliers to generate')
-    parser.add_argument('--supply-transactions', type=int, default=20,
-                        help='Number of supply transactions to generate (default: 20)')
-    parser.add_argument('--customer-transactions', type=int, default=30,
-                        help='Number of customer transactions to generate (default: 30)')
+    parser.add_argument('--procurements', type=int, default=20,
+                        help='Number of procurements to generate (default: 20)')
+    parser.add_argument('--orders', type=int, default=30,
+                        help='Number of orders to generate (default: 30)')
     
     args = parser.parse_args()
     
@@ -582,8 +579,8 @@ Examples:
             seed_customers(cursor)
             seed_products(cursor)
             seed_storages(cursor)
-            seed_supply_transactions(cursor, args.supply_transactions)
-            seed_customer_transactions(cursor, args.customer_transactions)
+            seed_procurements(cursor, args.procurements)
+            seed_orders(cursor, args.orders)
             
             if args.extra_customers > 0 or args.extra_suppliers > 0:
                 generate_additional_fake_data(cursor, args.extra_customers, args.extra_suppliers)

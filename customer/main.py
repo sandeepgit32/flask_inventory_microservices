@@ -45,192 +45,51 @@ def create_app():
     flask_app = Flask(__name__)
     flask_app.config.from_object(Config)
     db.init_app(flask_app)
-    register_routes(flask_app)
+
+    flask_app.cache_warmed = False
+
+    from routes import bp as customer_bp
+    flask_app.register_blueprint(customer_bp)
+
     return flask_app
 
 
-def register_routes(app):
-    """Register all routes on the Flask app"""
+def main():
+    logger.info("Starting Customer Service...")
+    app = create_app()
     
-    @app.route('/health', methods=['GET'])
-    def health_check():
-        consumer_running = supervisor and len(supervisor.supervisors) > 0
-        return jsonify({
-            'status': 'healthy',
-            'service': Config.SERVICE_NAME,
-            'cache_warmed': cache_warmed,
-            'consumer_running': consumer_running
-        }), 200
-
-    @app.route('/customers', methods=['GET'])
-    def get_customers():
-        try:
-            start = request.args.get('start', 0, type=int)
-            limit = request.args.get('limit', 50, type=int)
-            customers = Customer.query.offset(start).limit(limit).all()
-            return jsonify({
-                'customers': [c.to_dict() for c in customers],
-                'start': start,
-                'limit': limit,
-                'count': len(customers)
-            }), 200
-        except Exception as e:
-            logger.error(f"Error getting customers: {e}")
-            return jsonify({'error': 'Failed to fetch customers'}), 500
-
-    @app.route('/customers/<int:customer_id>', methods=['GET'])
-    def get_customer(customer_id):
-        try:
-            customer = Customer.query.get(customer_id)
-            if not customer:
-                return jsonify({'error': 'Customer not found'}), 404
-            return jsonify(customer.to_dict()), 200
-        except Exception as e:
-            logger.error(f"Error getting customer {customer_id}: {e}")
-            return jsonify({'error': 'Failed to fetch customer'}), 500
-
-    @app.route('/customers', methods=['POST'])
-    def create_customer():
-        try:
-            data = request.get_json()
-            if not data.get('name'):
-                return jsonify({'error': 'Name is required'}), 400
-            
-            if Customer.query.filter_by(name=data['name']).first():
-                return jsonify({'error': 'Customer name already exists'}), 409
-            
-            customer = Customer(
-                name=data['name'],
-                city=data.get('city'),
-                zipcode=data.get('zipcode'),
-                contact_person=data.get('contact_person'),
-                phone=data.get('phone'),
-                email=data.get('email')
-            )
-            
-            db.session.add(customer)
-            db.session.commit()
-            
-            cache_entity('customer', customer.id, customer.to_dict(), ttl=86400)
-            invalidate_list_cache('customer')
-            if event_publisher:
-                event_publisher.publish('customer_events', 'created', customer.id, customer.to_dict())
-            
-            logger.info(f"Customer created: {customer.name} (ID: {customer.id})")
-            return jsonify(customer.to_dict()), 201
-        except Exception as e:
-            logger.error(f"Error creating customer: {e}")
-            db.session.rollback()
-            return jsonify({'error': 'Failed to create customer'}), 500
-
-    @app.route('/customers/<int:customer_id>', methods=['PUT'])
-    def update_customer(customer_id):
-        try:
-            customer = Customer.query.get(customer_id)
-            if not customer:
-                return jsonify({'error': 'Customer not found'}), 404
-            
-            data = request.get_json()
-            if 'name' in data:
-                customer.name = data['name']
-            if 'city' in data:
-                customer.city = data['city']
-            if 'zipcode' in data:
-                customer.zipcode = data['zipcode']
-            if 'contact_person' in data:
-                customer.contact_person = data['contact_person']
-            if 'phone' in data:
-                customer.phone = data['phone']
-            if 'email' in data:
-                customer.email = data['email']
-            
-            db.session.commit()
-            if event_publisher:
-                event_publisher.publish('customer_events', 'updated', customer.id, customer.to_dict())
-            
-            logger.info(f"Customer updated: {customer.name} (ID: {customer.id})")
-            return jsonify(customer.to_dict()), 200
-        except Exception as e:
-            logger.error(f"Error updating customer {customer_id}: {e}")
-            db.session.rollback()
-            return jsonify({'error': 'Failed to update customer'}), 500
-
-    @app.route('/customers/<int:customer_id>', methods=['DELETE'])
-    def delete_customer(customer_id):
-        try:
-            customer = Customer.query.get(customer_id)
-            if not customer:
-                return jsonify({'error': 'Customer not found'}), 404
-            
-            customer_name = customer.name
-            db.session.delete(customer)
-            db.session.commit()
-            
-            if event_publisher:
-                event_publisher.publish('customer_events', 'deleted', customer_id, {})
-            
-            logger.info(f"Customer deleted: {customer_name} (ID: {customer_id})")
-            return jsonify({'message': 'Customer deleted successfully'}), 200
-        except Exception as e:
-            logger.error(f"Error deleting customer {customer_id}: {e}")
-            db.session.rollback()
-            return jsonify({'error': 'Failed to delete customer'}), 500
-
-    @app.route('/customers/city/<city>', methods=['GET'])
-    def get_customers_by_city(city):
-        try:
-            customers = Customer.query.filter_by(city=city).all()
-            return jsonify({
-                'customers': [c.to_dict() for c in customers],
-                'city': city,
-                'count': len(customers)
-            }), 200
-        except Exception as e:
-            logger.error(f"Error getting customers by city: {e}")
-            return jsonify({'error': 'Failed to fetch customers'}), 500
-
-
-def warm_cache(app):
-    global cache_warmed
+    # Warm cache
     try:
         with app.app_context():
             logger.info("Starting cache warming for customers...")
             customers = Customer.query.all()
             customer_dicts = [c.to_dict() for c in customers]
             warm_cache_sync('customer', customer_dicts, ttl=86400)
-            cache_warmed = True
+            app.cache_warmed = True
             logger.info(f"Cache warming complete: {len(customer_dicts)} customers loaded")
     except Exception as e:
         logger.error(f"Failed to warm cache: {e}")
-
-
-def shutdown_handler(signum, frame):
-    logger.info("Received shutdown signal, cleaning up...")
-    if supervisor:
-        supervisor.stop_all()
-    logger.info("Shutdown complete")
-    sys.exit(0)
-
-
-def main():
-    global event_publisher, supervisor
     
-    logger.info("Starting Customer Service...")
-    app = create_app()
+    app.event_publisher = EventPublisher()
     
-    warm_cache(app)
-    
-    event_publisher = EventPublisher()
-    
-    supervisor = MultiProcessSupervisor()
-    supervisor.add_process(
+    # Initialize and start supervisor
+    app.supervisor = MultiProcessSupervisor()
+    app.supervisor.add_process(
         lambda: CustomerEventConsumer(),
         max_retries=3,
         retry_delay=5,
         check_interval=5
     )
-    supervisor.start_all()
+    app.supervisor.start_all()
     
+    # Handle shutdown signals
+    def shutdown_handler(signum, frame):
+        logger.info("Received shutdown signal, cleaning up...")
+        if hasattr(app, 'supervisor') and app.supervisor:
+            app.supervisor.stop_all()
+        logger.info("Shutdown complete")
+        sys.exit(0)
+
     signal.signal(signal.SIGTERM, shutdown_handler)
     signal.signal(signal.SIGINT, shutdown_handler)
     

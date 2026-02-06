@@ -66,8 +66,8 @@ python seed_data.py --help
 | `--no-clear` | false | Don't clear existing data |
 | `--extra-customers` | 0 | Generate additional fake customers |
 | `--extra-suppliers` | 0 | Generate additional fake suppliers |
-| `--supply-transactions` | 20 | Number of supply transactions |
-| `--customer-transactions` | 30 | Number of customer transactions |
+| `--procurements` | 20 | Number of procurements |
+| `--orders` | 30 | Number of orders |
 
 ## Environment Variables
 
@@ -91,7 +91,7 @@ The script inserts:
 - 24 storage records (product inventory in warehouses)
 
 ### Transactions
-- 20 supply transactions (purchases from suppliers)
+- 20 procurements (purchases from suppliers)
 - 30 customer transactions (sales to customers)
 
 ### Generated with Faker
@@ -106,8 +106,8 @@ The script inserts:
 ✓ Connected to MySQL database: inventory_db@localhost:32000
 
 🗑️  Clearing existing data...
-  ✓ Cleared customer_transactions
-  ✓ Cleared supply_transactions
+  ✓ Cleared orders
+  ✓ Cleared procurements
   ✓ Cleared storages
   ✓ Cleared products
   ✓ Cleared customers
@@ -129,11 +129,11 @@ The script inserts:
 🏪 Seeding storages...
   ✓ Inserted 24 storage records
 
-📥 Seeding supply transactions (20 records)...
-  ✓ Inserted 20 supply transactions
+📥 Seeding procurements (20 records)...
+  ✓ Inserted 20 procurements
 
-📤 Seeding customer transactions (30 records)...
-  ✓ Inserted 30 customer transactions
+📤 Seeding orders (30 records)...
+  ✓ Inserted 30 orders
 
 ============================================================
 ✅ Database seeding completed successfully!

@@ -48,15 +48,15 @@
               <td class="table-cell">
                 <div>
                   <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                    {{ order.product?.code || order.product_code }}
+                    {{ order.product?.product_code || order.product_code }}
                   </span>
                   <p class="text-sm text-gray-600 mt-1">{{ order.product?.name || order.product_name }}</p>
                 </div>
               </td>
-              <td class="table-cell font-medium">{{ order.quantity }} {{ order.product?.measure_unit || order.measure_unit || '' }}</td>
+              <td class="table-cell font-medium">{{ order.quantity }} {{ order.product?.measure_unit || '' }}</td>
               <td class="table-cell">${{ order.unit_price?.toFixed(2) }}</td>
               <td class="table-cell">
-                <span class="font-semibold text-blue-600">${{ order.total_amount?.toFixed(2) }}</span>
+                <span class="font-semibold text-blue-600">${{ (order.total_cost ?? order.total_amount)?.toFixed(2) }}</span>
               </td>
             </tr>
           </tbody>

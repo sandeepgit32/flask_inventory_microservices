@@ -84,10 +84,10 @@ CREATE TABLE IF NOT EXISTS storages (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================
--- Procurement Service Tables (Supply Transactions)
+-- Procurement Service Tables (Procurements)
 -- ============================================
 
-CREATE TABLE IF NOT EXISTS supply_transactions (
+CREATE TABLE IF NOT EXISTS procurements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     
@@ -95,22 +95,9 @@ CREATE TABLE IF NOT EXISTS supply_transactions (
     supplier_id INT,
     product_id INT,
     
-    -- Denormalized data (for historical accuracy)
-    supplier_name VARCHAR(100),
-    city VARCHAR(100),
-    zipcode VARCHAR(20),
-    contact_person VARCHAR(100),
-    phone VARCHAR(20),
-    email VARCHAR(100),
-    
-    product_code VARCHAR(50),
-    product_name VARCHAR(200),
-    product_category VARCHAR(100),
-    
     unit_price FLOAT,
     quantity INT,
     total_cost FLOAT,
-    measure_unit VARCHAR(20),
     
     FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL,
@@ -120,10 +107,10 @@ CREATE TABLE IF NOT EXISTS supply_transactions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================
--- Order Service Tables (Customer Transactions)
+-- Order Service Tables (Orders)
 -- ============================================
 
-CREATE TABLE IF NOT EXISTS customer_transactions (
+CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     
@@ -131,27 +118,14 @@ CREATE TABLE IF NOT EXISTS customer_transactions (
     customer_id INT,
     product_id INT,
     
-    -- Denormalized data (for historical accuracy)
-    customer_name VARCHAR(100),
-    city VARCHAR(100),
-    zipcode VARCHAR(20),
-    contact_person VARCHAR(100),
-    phone VARCHAR(20),
-    email VARCHAR(100),
-    
-    product_code VARCHAR(50),
-    product_name VARCHAR(200),
-    product_category VARCHAR(100),
-    
     unit_price FLOAT,
     quantity INT,
     total_cost FLOAT,
-    measure_unit VARCHAR(20),
     
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL,
-    INDEX idx_customer_id (customer_id),
-    INDEX idx_product_id (product_id),
+    INDEX idx_orders_customer (customer_id),
+    INDEX idx_orders_product (product_id),
     INDEX idx_timestamp (timestamp)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

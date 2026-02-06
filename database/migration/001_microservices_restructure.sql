@@ -73,78 +73,100 @@ ALTER TABLE products
 CREATE INDEX idx_products_supplier ON products(supplier_id);
 
 -- ============================================
--- STEP 4: Normalize supply_transactions table
+-- STEP 4: Normalize procurements table
 -- ============================================
 
 -- Add foreign key columns for supplier and product
-ALTER TABLE supply_transactions 
+ALTER TABLE procurements 
     ADD COLUMN supplier_id INT AFTER id,
     ADD COLUMN product_id INT AFTER supplier_id;
 
 -- Backfill supplier_id from supplier_name
-UPDATE supply_transactions st
+UPDATE procurements st
 INNER JOIN suppliers s ON st.supplier_name = s.name
 SET st.supplier_id = s.id;
 
 -- Backfill product_id from product_code
-UPDATE supply_transactions st
+UPDATE procurements st
 INNER JOIN products p ON st.product_code = p.product_code
 SET st.product_id = p.id;
 
 -- Add foreign key constraints
-ALTER TABLE supply_transactions
-    ADD CONSTRAINT fk_supply_transactions_supplier 
+ALTER TABLE procurements
+    ADD CONSTRAINT fk_procurements_supplier 
     FOREIGN KEY (supplier_id) REFERENCES suppliers(id) 
     ON DELETE SET NULL;
 
-ALTER TABLE supply_transactions
-    ADD CONSTRAINT fk_supply_transactions_product 
+ALTER TABLE procurements
+    ADD CONSTRAINT fk_procurements_product 
     FOREIGN KEY (product_id) REFERENCES products(id) 
     ON DELETE SET NULL;
 
 -- Add indexes for performance
-CREATE INDEX idx_supply_tx_supplier ON supply_transactions(supplier_id);
-CREATE INDEX idx_supply_tx_product ON supply_transactions(product_id);
+CREATE INDEX idx_procurements_supplier ON procurements(supplier_id);
+CREATE INDEX idx_procurements_product ON procurements(product_id);
 
--- Note: Keep denormalized columns for historical data integrity
--- (supplier_name, city, zipcode, product_name, etc.)
+-- Drop denormalized historical columns now that table is normalized
+ALTER TABLE procurements
+    DROP COLUMN IF EXISTS supplier_name,
+    DROP COLUMN IF EXISTS city,
+    DROP COLUMN IF EXISTS zipcode,
+    DROP COLUMN IF EXISTS contact_person,
+    DROP COLUMN IF EXISTS phone,
+    DROP COLUMN IF EXISTS email,
+    DROP COLUMN IF EXISTS product_code,
+    DROP COLUMN IF EXISTS product_name,
+    DROP COLUMN IF EXISTS product_category,
+    DROP COLUMN IF EXISTS measure_unit;
+
+-- Note: Remaining denormalized columns dropped; procurement data is normalized to supplier_id/product_id
 
 -- ============================================
--- STEP 5: Normalize customer_transactions table
+-- STEP 5: Normalize orders table
 -- ============================================
 
 -- Add foreign key columns for customer and product
-ALTER TABLE customer_transactions 
+ALTER TABLE orders 
     ADD COLUMN customer_id INT AFTER id,
     ADD COLUMN product_id INT AFTER customer_id;
 
 -- Backfill customer_id from customer_name
-UPDATE customer_transactions ct
+UPDATE orders ct
 INNER JOIN customers c ON ct.customer_name = c.name
 SET ct.customer_id = c.id;
 
 -- Backfill product_id from product_code
-UPDATE customer_transactions ct
+UPDATE orders ct
 INNER JOIN products p ON ct.product_code = p.product_code
 SET ct.product_id = p.id;
 
 -- Add foreign key constraints
-ALTER TABLE customer_transactions
-    ADD CONSTRAINT fk_customer_transactions_customer 
+ALTER TABLE orders
+    ADD CONSTRAINT fk_orders_customer 
     FOREIGN KEY (customer_id) REFERENCES customers(id) 
     ON DELETE SET NULL;
 
-ALTER TABLE customer_transactions
-    ADD CONSTRAINT fk_customer_transactions_product 
+ALTER TABLE orders
+    ADD CONSTRAINT fk_orders_product 
     FOREIGN KEY (product_id) REFERENCES products(id) 
     ON DELETE SET NULL;
 
 -- Add indexes for performance
-CREATE INDEX idx_customer_tx_customer ON customer_transactions(customer_id);
-CREATE INDEX idx_customer_tx_product ON customer_transactions(product_id);
+CREATE INDEX idx_orders_customer ON orders(customer_id);
+CREATE INDEX idx_orders_product ON orders(product_id);
 
--- Note: Keep denormalized columns for historical data integrity
--- (customer_name, city, zipcode, product_name, etc.)
+-- Drop denormalized historical columns now that table is normalized
+ALTER TABLE orders
+    DROP COLUMN IF EXISTS customer_name,
+    DROP COLUMN IF EXISTS city,
+    DROP COLUMN IF EXISTS zipcode,
+    DROP COLUMN IF EXISTS contact_person,
+    DROP COLUMN IF EXISTS phone,
+    DROP COLUMN IF EXISTS email,
+    DROP COLUMN IF EXISTS product_code,
+    DROP COLUMN IF EXISTS product_name,
+    DROP COLUMN IF EXISTS product_category,
+    DROP COLUMN IF EXISTS measure_unit;
 
 -- ============================================
 -- STEP 6: Remove warehouse_id from customers table
@@ -188,19 +210,19 @@ ON DUPLICATE KEY UPDATE username=username;
 -- LEFT JOIN suppliers s ON p.supplier_id = s.id 
 -- LIMIT 5;
 
--- Verify supply_transactions with FKs
+-- Verify procurements with FKs
 -- SELECT st.id, st.supplier_id, s.name as supplier_name, st.product_id, p.name as product_name
--- FROM supply_transactions st
+-- FROM procurements st
 -- LEFT JOIN suppliers s ON st.supplier_id = s.id
 -- LEFT JOIN products p ON st.product_id = p.id
 -- LIMIT 5;
 
--- Verify customer_transactions with FKs
+-- Verify orders with FKs
 -- SELECT ct.id, ct.customer_id, c.name as customer_name, ct.product_id, p.name as product_name
--- FROM customer_transactions ct
+-- FROM orders ct
 -- LEFT JOIN customers c ON ct.customer_id = c.id
 -- LEFT JOIN products p ON ct.product_id = p.id
--- LIMIT 5;
+-- LIMIT 5; 
 
 -- ============================================
 -- MIGRATION COMPLETE

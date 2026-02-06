@@ -6,7 +6,7 @@ Used by the Supply Transaction Service to notify inventory updates.
 """
 import json
 import redis
-from .redis_config import RedisConfig
+from message_queue.redis_config import RedisConfig
 
 
 class MessageProducer:

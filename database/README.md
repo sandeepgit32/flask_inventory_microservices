@@ -30,11 +30,11 @@ The database contains tables for three services:
 - `products` - Product catalog with supplier references (product_code, name, prices, etc.)
 - `storages` - Product inventory in warehouses (product_code, warehouse_name, quantity)
 
-### Supply Transaction Service Tables
-- `supply_transactions` - Records of supplies received from suppliers
+### Procurement Service Tables
+- `procurements` - Records of supplies received from suppliers
 
-### Customer Transaction Service Tables
-- `customer_transactions` - Records of sales to customers
+### Order Service Tables
+- `orders` - Records of sales to customers
 
 ## Configuration
 

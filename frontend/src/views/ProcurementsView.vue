@@ -41,19 +41,19 @@
               <td class="table-cell">{{ formatDate(proc.timestamp) }}</td>
               <td class="table-cell">
                 <div>
-                  <p class="font-medium text-gray-900">{{ proc.supplier?.name || proc.supplier_name }}</p>
+                  <p class="font-medium text-gray-900">{{ proc.supplier?.name || 'N/A' }}</p>
                   <p class="text-xs text-gray-500">{{ proc.supplier?.city || 'N/A' }}</p>
                 </div>
               </td>
               <td class="table-cell">
                 <div>
                   <span class="px-2.5 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-medium">
-                    {{ proc.product?.code || proc.product_code }}
+                    {{ proc.product?.product_code || proc.product?.code || '' }}
                   </span>
-                  <p class="text-sm text-gray-600 mt-1">{{ proc.product?.name || proc.product_name }}</p>
+                  <p class="text-sm text-gray-600 mt-1">{{ proc.product?.name || '' }}</p>
                 </div>
               </td>
-              <td class="table-cell font-medium">{{ proc.quantity }} {{ proc.product?.measure_unit || proc.measure_unit || '' }}</td>
+              <td class="table-cell font-medium">{{ proc.quantity }} {{ proc.product?.measure_unit || '' }}</td>
               <td class="table-cell">${{ proc.unit_price?.toFixed(2) }}</td>
               <td class="table-cell">
                 <span class="font-semibold text-emerald-600">${{ proc.total_cost?.toFixed(2) }}</span>
